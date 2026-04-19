@@ -223,8 +223,9 @@ function calcStats(registros) {
     const prom      = Math.round(mins.reduce((a,b)=>a+b,0)/mins.length);
     const punt      = regs.filter(r => r.min <= INICIO_MIN).length;
     const esperados = totalPorGrupo[grupo] || regs.length;
-    const pct       = Math.round(punt/esperados*100);
-    return { grupo, total: regs.length, esperados, promMin: prom, puntuales: punt, pct };
+    const pct       = Math.round(punt/esperados*100);         // % sobre total del grupo
+    const pctBarra  = Math.round(punt/regs.length*100);       // % sobre escaneados (para la barra)
+    return { grupo, total: regs.length, esperados, promMin: prom, puntuales: punt, pct, pctBarra };
   }).sort((a,b) => b.puntuales !== a.puntuales ? b.puntuales - a.puntuales : b.pct - a.pct);
 
   // Por persona
@@ -314,7 +315,7 @@ function renderGrupos(stats) {
         <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:3px;">Grupo más puntual · ${ultimaFecha}</div>
         <div style="font-size:20px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${statsGrupo[0].grupo}</div>
         <div style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.9)">${statsGrupo[0].puntuales}/${statsGrupo[0].esperados} puntuales</span>
+          <span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.9)">${statsGrupo[0].puntuales} puntuales</span>
           <span style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.4)"></span>
           <span style="font-size:12px;color:rgba(255,255,255,.7)">${statsGrupo[0].pct}% del grupo</span>
           <span style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.4)"></span>
@@ -338,17 +339,17 @@ function renderGrupos(stats) {
       <div class="card-head"><span class="card-title">Ranking por grupos</span><span class="card-sub">${ultimaFecha} · Por cantidad de puntuales</span></div>
       <div class="card-body">
         ${statsGrupo.map((g,i) => {
-          const cls = g.pct>=80?'ok':g.pct>=50?'warn':'late';
-          const barW = Math.round(g.puntuales/maxPunt*100);
+          const cls  = g.pctBarra>=80?'ok':g.pctBarra>=50?'warn':'late';
+          const barW = g.pctBarra;
           const top3 = parsedHoy.filter(r=>r.grupo===g.grupo&&r.min<=INICIO_MIN).sort((a,b)=>(a.min||0)-(b.min||0)).slice(0,3);
           return `<div class="row">
             <div class="rn ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
             <div class="rinfo">
               <div class="rname">${g.grupo}</div>
-              <div class="rsub">${g.puntuales}/${g.esperados} puntuales · ${g.pct}%${g.total < g.esperados ? ` <span style="color:var(--warn);font-size:10px;">(${g.total} escaneados)</span>` : ''}</div>
+              <div class="rsub">${g.puntuales} puntuales · <span style="color:var(--muted);font-size:10px;">${g.pct}% del grupo</span>${g.total < g.esperados ? ` <span style="color:var(--warn);font-size:10px;">(${g.total} escaneados)</span>` : ''}</div>
               <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
                 <div style="flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;"><div style="width:${barW}%;height:100%;border-radius:3px;background:var(--${cls==='ok'?'ok':cls==='warn'?'warn':'late'});transition:width .5s;"></div></div>
-                <span class="badge ${cls}">${g.puntuales}</span>
+                <span class="badge ${cls}">${g.pctBarra}%</span>
               </div>
               ${top3.length?`<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;">${top3.map(r=>`<span style="font-size:10px;background:var(--ok-bg);color:var(--ok);padding:1px 6px;border-radius:10px;">${r.nombre.split(' ')[0]} <span style="font-family:'DM Mono',monospace;">${r.horaStr}</span></span>`).join('')}</div>`:''}
             </div>
@@ -365,11 +366,11 @@ function renderGrupos(stats) {
         ${statsGrupo.map(g => {
           const punt  = parsedHoy.filter(r=>r.grupo===g.grupo&&r.min<=INICIO_MIN).sort((a,b)=>(a.min||0)-(b.min||0));
           const tarde = parsedHoy.filter(r=>r.grupo===g.grupo&&r.min>INICIO_MIN).sort((a,b)=>(a.min||0)-(b.min||0));
-          const cls   = g.pct>=80?'ok':g.pct>=50?'warn':'late';
+          const cls   = g.pctBarra>=80?'ok':g.pctBarra>=50?'warn':'late';
           return `<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--bg);">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
               <span style="font-size:13px;font-weight:600;">${g.grupo}</span>
-              <span class="badge ${cls}">${g.pct}% · ${g.puntuales}/${g.esperados}</span>
+              <span class="badge ${cls}">${g.pctBarra}% · ${g.puntuales} puntuales</span>
             </div>
             ${punt.length?`<div style="font-size:11px;color:var(--ok);font-weight:500;margin-bottom:4px;">Puntuales (${punt.length})</div>
             <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;">${punt.map(r=>`<div style="background:var(--ok-bg);border:1px solid #86efac;border-radius:8px;padding:4px 8px;font-size:11px;"><span style="font-weight:500;color:var(--ok);">${r.nombre.split(' ').slice(0,2).join(' ')}</span> <span style="font-family:'DM Mono',monospace;color:var(--ok);">${r.horaStr}</span></div>`).join('')}</div>`:''}
