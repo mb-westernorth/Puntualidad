@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --c1:#4f46e5;--c2:#f5f3ff;--ink:#111827;--muted:#6b7280;
+  --c1:#1e3a4a;--c2:#f0f4f5;--ink:#111827;--muted:#6b7280;
   --bg:#f3f4f6;--white:#fff;--border:#e5e7eb;
   --ok:#15803d;--ok-bg:#dcfce7;
   --late:#dc2626;--late-bg:#fee2e2;
@@ -15,8 +15,6 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
-
-/* HEADER */
 header{background:var(--c1);padding:14px 20px;position:sticky;top:0;z-index:50}
 .h-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:12px}
 .h-icon{width:38px;height:38px;border:1.5px solid rgba(255,255,255,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -26,54 +24,32 @@ header p{font-size:11px;color:rgba(255,255,255,.6);margin-top:1px}
 .h-meta{display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap}
 .h-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);border:0.5px solid rgba(255,255,255,.25);border-radius:20px;padding:3px 10px;font-size:10px;color:rgba(255,255,255,.8);letter-spacing:.4px}
 .live-dot{width:5px;height:5px;border-radius:50%;animation:pulse 2s ease-in-out infinite}
-.live-dot.on{background:#86efac}
-.live-dot.off{background:#f87171;animation:none}
+.live-dot.on{background:#86efac}.live-dot.off{background:#f87171;animation:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.last-update{font-size:10px;color:rgba(255,255,255,.5);margin-left:4px}
-
-/* TABS */
+.last-update{font-size:10px;color:rgba(255,255,255,.5)}
 .tabs{background:var(--white);border-bottom:1px solid var(--border);overflow-x:auto}
 .tabs-inner{max-width:960px;margin:0 auto;display:flex;padding:0 12px}
 .tab{padding:11px 14px;font-size:12px;font-weight:500;color:var(--muted);border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;background:none;font-family:'Outfit',sans-serif}
 .tab:hover{color:var(--c1)}.tab.active{color:var(--c1);border-bottom-color:var(--c1)}
-
 .content{max-width:960px;margin:0 auto;padding:18px 16px}
 .panel{display:none}.panel.active{display:block}
-
-/* LOADING */
 .loading{display:flex;flex-direction:column;align-items:center;padding:70px 20px;gap:14px}
 .spinner{width:30px;height:30px;border:3px solid var(--border);border-top-color:var(--c1);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading p,.loading-msg{font-size:13px;color:var(--muted)}
+.loading p{font-size:13px;color:var(--muted)}
 .err{background:#fee2e2;border:1px solid #fca5a5;border-radius:10px;padding:14px;font-size:13px;color:#991b1b;margin-bottom:14px}
-
-/* SETUP BOX */
-.setup{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px}
-.setup h3{font-size:14px;font-weight:600;margin-bottom:10px}
-.setup ol{padding-left:18px;font-size:13px;color:var(--muted);line-height:2.2}
-.setup code{background:var(--bg);padding:2px 7px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px;color:var(--c1)}
-
-/* KPI */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:18px}
-.kpi{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;transition:transform .2s}
-.kpi.flash{animation:flashIn .4s ease}
-@keyframes flashIn{0%{background:#ede9fe}100%{background:var(--white)}}
+.kpi{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center}
 .kpi-n{font-size:22px;font-weight:700;color:var(--c1);line-height:1}
 .kpi-n.ok{color:var(--ok)}.kpi-n.late{color:var(--late)}.kpi-n.warn{color:var(--warn)}
 .kpi-l{font-size:10px;color:var(--muted);margin-top:3px}
-
-/* CARD */
 .card{background:var(--white);border:1px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden}
 .card-head{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .card-title{font-size:13px;font-weight:600}
 .card-sub{font-size:11px;color:var(--muted)}
 .card-body{padding:12px 14px}
-
-/* RANK ROW */
-.row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--bg);transition:background .3s}
+.row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--bg)}
 .row:last-child{border-bottom:none}
-.row.new-entry{animation:slideIn .5s ease}
-@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
 .rn{font-size:11px;font-weight:700;color:var(--muted);width:20px;text-align:center;flex-shrink:0}
 .rn.g1{color:#b45309}.rn.g2{color:#6b7280}.rn.g3{color:#92400e}
 .rinfo{flex:1;min-width:0}
@@ -81,62 +57,40 @@ header p{font-size:11px;color:rgba(255,255,255,.6);margin-top:1px}
 .rsub{font-size:11px;color:var(--muted);margin-top:1px}
 .rhora{font-family:'DM Mono',monospace;font-size:12px;font-weight:600;flex-shrink:0;min-width:44px;text-align:right}
 .rhora.ok{color:var(--ok)}.rhora.late{color:var(--late)}.rhora.warn{color:var(--warn)}
-.rbar{width:50px;flex-shrink:0}
-.rbar-t{height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
-.rbar-f{height:100%;border-radius:3px;min-width:2px;transition:width .5s}
-.rbar-f.ok{background:var(--ok)}.rbar-f.late{background:var(--late)}.rbar-f.warn{background:var(--warn)}
-
-/* BADGES */
 .badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px}
 .badge.ok{background:var(--ok-bg);color:var(--ok)}
 .badge.late{background:var(--late-bg);color:var(--late)}
 .badge.warn{background:var(--warn-bg);color:var(--warn)}
 .tag{display:inline-block;background:var(--c2);color:var(--c1);font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px}
-
-/* DÍA CARDS */
+.search{width:100%;padding:9px 14px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'Outfit',sans-serif;background:var(--white);outline:none;margin-bottom:12px}
+.search:focus{border-color:var(--c1)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--white);font-size:11px;font-weight:500;color:var(--muted);cursor:pointer}
+.chip.active{background:var(--c2);border-color:var(--c1);color:var(--c1)}
 .dia-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px;margin-bottom:14px}
 .dia-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;cursor:pointer}
 .dia-card:hover,.dia-card.sel{border-color:var(--c1);background:var(--c2)}
 .dia-name{font-size:12px;font-weight:600}
 .dia-hora{font-family:'DM Mono',monospace;font-size:17px;font-weight:700;margin:5px 0 2px}
 .dia-cnt{font-size:10px;color:var(--muted)}
-.dia-pct{font-size:10px;font-weight:500;margin-top:3px}
-
-/* SEARCH + CHIPS */
-.search{width:100%;padding:9px 14px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'Outfit',sans-serif;background:var(--white);outline:none;margin-bottom:12px}
-.search:focus{border-color:var(--c1)}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-.chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--white);font-size:11px;font-weight:500;color:var(--muted);cursor:pointer}
-.chip.active{background:var(--c2);border-color:var(--c1);color:var(--c1)}
-
-/* HISTORIAL */
 .hist{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bg)}
 .hist:last-child{border-bottom:none}
 .hist-f{font-size:11px;color:var(--muted);min-width:72px}
 .hist-d{font-size:11px;color:var(--muted);min-width:54px}
 .hist-h{font-family:'DM Mono',monospace;font-size:13px;font-weight:600;flex:1}
 .hist-dif{font-size:11px;font-weight:600;min-width:54px;text-align:right}
-
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:540px){.two-col{grid-template-columns:1fr}}
 .empty{text-align:center;padding:30px 20px;font-size:13px;color:var(--muted)}
 footer{text-align:center;padding:22px;font-size:10px;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;border-top:1px solid var(--border);margin-top:8px}
-
-/* LIVE COUNTER ANIMATION */
-@keyframes countUp{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
-.count-anim{animation:countUp .3s ease}
 </style>
 </head>
 <body>
 
 <script>
-// ══════════════════════════════════════════════════════════════
-//  CONFIGURACIÓN — edita solo esta línea:
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzEr3KSI9dxW1bbIZDd9feMmKpY75fSFz3-8pBmJVKc4RceN_nqBxJ0qKNwM3hAMgcpgg/exec';
-//  Ejemplo: 'https://script.google.com/macros/s/AKfycbXXX/exec'
-//  Intervalo de actualización en segundos (mínimo 10):
-const REFRESH_SEG = 3;
-// ══════════════════════════════════════════════════════════════
+const GAS_URL    = 'https://script.google.com/macros/s/AKfycbyQS2vSHYq-BdbYSml1EPaUFy7UQxCAqc4Ftof-Kp3qCuIkxIgnCmCl3eEDSU3F90v7iA/exec';
+const REFRESH_SEG = 5;
+const INICIO_MIN  = 8 * 60; // 8:00 AM
 </script>
 
 <header>
@@ -150,6 +104,9 @@ const REFRESH_SEG = 3;
       <div class="h-meta">
         <div class="h-badge"><div class="live-dot on" id="liveDot"></div>En vivo</div>
         <div class="h-badge">Inicio: 8:00 AM</div>
+        <div class="h-badge" id="modoBadge" style="cursor:pointer;user-select:none;" onclick="toggleModo()">
+          <span id="modoIcon">⏸</span> <span id="modoLabel">30s</span>
+        </div>
         <span class="last-update" id="lastUpdate"></span>
       </div>
     </div>
@@ -166,444 +123,236 @@ const REFRESH_SEG = 3;
 </div>
 
 <div class="content">
-  <div id="panelGrupos"   class="panel active"></div>
+  <div id="panelGrupos"    class="panel active"><div class="loading"><div class="spinner"></div><p>Cargando datos…</p></div></div>
   <div id="panelIndividual" class="panel"></div>
-  <div id="panelDias"    class="panel"></div>
+  <div id="panelDias"      class="panel"></div>
   <div id="panelHistorial" class="panel"></div>
 </div>
 
 <footer>© 2026 Misión Boliviana Occidental Norte · IASD</footer>
 
 <script>
-// ── ESTADO GLOBAL ─────────────────────────────────────────────
-const INICIO_MIN = 8 * 60; // 8:00 AM en minutos
+// ── ESTADO ────────────────────────────────────────────────────
 let DATA = null;
-let prevHash = '';
+let prevCount = null;
 let tabActual = 'grupos';
 let filtroGrupo = 'Todos';
-let filtroBusqueda = '';
-let diaSeleccionado = null;
+let filtroBusq  = '';
+let diaSelec    = null;
 let refreshTimer = null;
-let initialized = false;
+let modoEscaneo  = false;
 
-// ── TAB SWITCHING ─────────────────────────────────────────────
+function toggleModo() {
+  modoEscaneo = !modoEscaneo;
+  const icon  = document.getElementById('modoIcon');
+  const label = document.getElementById('modoLabel');
+  const badge = document.getElementById('modoBadge');
+  if (modoEscaneo) {
+    icon.textContent  = '⚡';
+    label.textContent = '3s — Escaneo activo';
+    badge.style.background = 'rgba(134,239,172,.25)';
+    badge.style.borderColor = 'rgba(134,239,172,.5)';
+  } else {
+    icon.textContent  = '⏸';
+    label.textContent = '30s';
+    badge.style.background = '';
+    badge.style.borderColor = '';
+  }
+}
+
+// ── TABS ──────────────────────────────────────────────────────
 function showTab(id, btn) {
   tabActual = id;
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active');
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
-  if (DATA) renderAll();
+  if (DATA) renderTabActual();
 }
 
-// ── FETCH ─────────────────────────────────────────────────────
-async function fetchData(showLoading) {
-  if (showLoading) showLoadingAll();
+// ── HELPERS ───────────────────────────────────────────────────
+function parseMin(f) {
+  if (!f) return null;
+  const p = f.trim().split(' ');
+  if (p.length < 2) return null;
+  const t = p[1].split(':');
+  return parseInt(t[0]) * 60 + parseInt(t[1]);
+}
+function parseFecha(f) { return f ? f.trim().split(' ')[0] : ''; }
+function parseHora(f)  { const p = f ? f.trim().split(' ') : []; return p.length > 1 ? p[1] : ''; }
+function formatMin(m) {
+  if (m === null) return '—';
+  const h = Math.floor(m/60), mm = String(m%60).padStart(2,'0');
+  return `${h%12||12}:${mm} ${h>=12?'PM':'AM'}`;
+}
+function clsDif(d) { if(d===null)return'warn'; if(d<=0)return'ok'; if(d<=15)return'warn'; return'late'; }
+function lblDif(d) { if(d===null)return'—'; if(d<0)return`${Math.abs(d)}m antes`; if(d===0)return'Exacto'; return`+${d}m tarde`; }
 
-  if (!GAS_URL || GAS_URL.includes('TU_URL')) {
-    showSetup();
-    return;
-  }
-
-  // Apps Script con JSONP para evitar CORS
-  const cbName = 'gasCallback_' + Date.now();
-  const url = GAS_URL + (GAS_URL.includes('?') ? '&' : '?') + 'vista=puntualidad&callback=' + cbName;
-
-  await new Promise((resolve) => {
-    const script = document.createElement('script');
-    const timeout = setTimeout(() => {
-      cleanup();
-      setLive(false);
-      if (!DATA) showError('Tiempo de espera agotado. Verifica tu conexión y que el Apps Script esté desplegado correctamente.');
-      resolve();
-    }, 10000);
-
-    function cleanup() {
-      clearTimeout(timeout);
-      delete window[cbName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-    }
-
-    window[cbName] = (json) => {
-      cleanup();
-      try {
-        if (!json || !json.registros) {
-          setLive(false);
-          if (!DATA) showError('Respuesta inválida del servidor. Asegúrate de haber actualizado el Apps Script con el código más reciente.');
-          resolve();
-          return;
-        }
-
-        const hash = json.registros.length + '_' + (json.totalEscaneos || 0);
-        const changed = hash !== prevHash;
-        prevHash = hash;
-
-        DATA = json;
-        setLive(true);
-        updateTimestamp();
-
-        if (!initialized) {
-          initialized = true;
-          renderAll(false);
-        } else if (changed) {
-          renderAll(true);
-        }
-      } catch(e) {
-        setLive(false);
-        if (!DATA) showError('Error procesando datos: ' + e.message);
-      }
-      resolve();
-    };
-
-    script.onerror = () => {
-      cleanup();
-      setLive(false);
-      if (!DATA) showError('No se pudo conectar al Apps Script. Verifica que esté desplegado con acceso <strong>Cualquier persona</strong>.');
-      resolve();
-    };
-
-    script.src = url;
-    document.head.appendChild(script);
-  });
+// ── CALCULAR ──────────────────────────────────────────────────
+function parseFechaNum(f) {
+  // "19/04/2026" → 20260419 para comparar
+  if (!f) return 0;
+  const p = f.split('/');
+  return p.length === 3 ? parseInt(p[2]+p[1]+p[0]) : 0;
 }
 
-function setLive(on) {
-  const dot = document.getElementById('liveDot');
-  if (dot) { dot.className = 'live-dot ' + (on ? 'on' : 'off'); }
-}
-
-function updateTimestamp() {
-  const el = document.getElementById('lastUpdate');
-  if (el) el.textContent = 'Actualizado ' + new Date().toLocaleTimeString('es-BO', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-}
-
-// startPolling definido abajo
-
-// ── PARSE HORA ────────────────────────────────────────────────
-// Formato entrada: "19/04/2026 6:29:06" → minutos desde medianoche
-function parseMin(fechaStr) {
-  if (!fechaStr) return null;
-  const parts = fechaStr.trim().split(' ');
-  if (parts.length < 2) return null;
-  const timeParts = parts[1].split(':');
-  if (timeParts.length < 2) return null;
-  return parseInt(timeParts[0]) * 60 + parseInt(timeParts[1]);
-}
-
-function parseFecha(fechaStr) {
-  if (!fechaStr) return '';
-  return fechaStr.trim().split(' ')[0];
-}
-
-function parseHora(fechaStr) {
-  if (!fechaStr) return '';
-  const parts = fechaStr.trim().split(' ');
-  return parts.length > 1 ? parts[1] : '';
-}
-
-function formatMin(min) {
-  if (min === null) return '—';
-  const h = Math.floor(min / 60);
-  const m = String(min % 60).padStart(2, '0');
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const h12 = h % 12 || 12;
-  return `${h12}:${m} ${ampm}`;
-}
-
-function difMin(min) {
-  if (min === null) return null;
-  return min - INICIO_MIN;
-}
-
-function classDif(dif) {
-  if (dif === null) return 'warn';
-  if (dif <= 0) return 'ok';
-  if (dif <= 15) return 'warn';
-  return 'late';
-}
-
-function labelDif(dif) {
-  if (dif === null) return '—';
-  if (dif < 0) return `${Math.abs(dif)} min antes`;
-  if (dif === 0) return 'Exacto';
-  return `+${dif} min tarde`;
-}
-
-// ── FECHA ACTIVA ──────────────────────────────────────────────
-let fechaActiva = null; // null = última fecha disponible
-
-function getFechasDisponibles(registros) {
-  const fechas = [...new Set(registros.map(r => parseFecha(r.fecha)).filter(Boolean))];
-  return fechas.sort((a,b) => compareFecha(b,a)); // más reciente primero
-}
-
-function getFechaFiltro(registros) {
-  if (fechaActiva) return fechaActiva;
-  const fechas = getFechasDisponibles(registros);
-  return fechas[0] || null;
-}
-
-function calcStatsAll(registros) {
-  // Versión sin filtro de fecha — para historial
+function calcStats(registros) {
   const parsed = registros.map(r => ({
     ...r,
-    fechaDate : parseFecha(r.fecha),
-    horaStr   : parseHora(r.fecha),
-    min       : parseMin(r.fecha),
+    fechaDate: parseFecha(r.fecha),
+    horaStr:   parseHora(r.fecha),
+    min:       parseMin(r.fecha),
   })).filter(r => r.min !== null);
+
+  // Detectar última fecha con registros
+  const ultimaFecha = parsed.reduce((max, r) =>
+    parseFechaNum(r.fechaDate) > parseFechaNum(max) ? r.fechaDate : max, '');
+
+  // Para el ranking de grupos: solo registros de la última fecha
+  const parsedHoy = parsed.filter(r => r.fechaDate === ultimaFecha);
+
+  // Por grupo (solo última fecha)
+  const gmap = {};
+  parsedHoy.forEach(r => {
+    if (!gmap[r.grupo]) gmap[r.grupo] = [];
+    gmap[r.grupo].push(r);
+  });
+  const totalPorGrupo = (DATA && DATA.totalPorGrupo) || {};
+  const statsGrupo = Object.entries(gmap).map(([grupo, regs]) => {
+    const mins      = regs.map(r => r.min);
+    const prom      = Math.round(mins.reduce((a,b)=>a+b,0)/mins.length);
+    const punt      = regs.filter(r => r.min <= INICIO_MIN).length;
+    const esperados = totalPorGrupo[grupo] || regs.length;
+    const pct       = Math.round(punt/esperados*100);
+    return { grupo, total: regs.length, esperados, promMin: prom, puntuales: punt, pct };
+  }).sort((a,b) => b.puntuales !== a.puntuales ? b.puntuales - a.puntuales : b.pct - a.pct);
+
+  // Por persona
+  const pmap = {};
+  parsed.forEach(r => {
+    if (!pmap[r.nombre]) pmap[r.nombre] = { nombre:r.nombre, grupo:r.grupo, regs:[] };
+    pmap[r.nombre].regs.push(r);
+  });
+  const statsPersona = Object.values(pmap).map(p => {
+    const mins = p.regs.map(r => r.min);
+    const prom = Math.round(mins.reduce((a,b)=>a+b,0)/mins.length);
+    const punt = p.regs.filter(r => r.min <= INICIO_MIN).length;
+    const pct  = Math.round(punt/p.regs.length*100);
+    return { ...p, total: p.regs.length, promMin: prom, puntuales: punt, pct };
+  }).sort((a,b) => b.puntuales !== a.puntuales ? b.puntuales - a.puntuales : b.pct - a.pct);
+
+  // Por día
+  const dmap = {};
+  parsed.forEach(r => {
+    const d = r.dia||'Sin día';
+    if (!dmap[d]) dmap[d] = [];
+    dmap[d].push(r);
+  });
+  const statsDia = Object.entries(dmap).map(([dia, regs]) => {
+    const mins = regs.map(r => r.min);
+    const prom = Math.round(mins.reduce((a,b)=>a+b,0)/mins.length);
+    const punt = regs.filter(r => r.min <= INICIO_MIN).length;
+    const pct  = Math.round(punt/regs.length*100);
+    return { dia, total: regs.length, promMin: prom, puntuales: punt, pct };
+  }).sort((a,b) => b.puntuales - a.puntuales);
+
   const totalRegs  = parsed.length;
   const totalPunt  = parsed.filter(r => r.min <= INICIO_MIN).length;
   const totalTarde = totalRegs - totalPunt;
-  const allMins    = parsed.map(r=>r.min);
+  const allMins    = parsed.map(r => r.min);
   const promGlobal = allMins.length ? Math.round(allMins.reduce((a,b)=>a+b,0)/allMins.length) : null;
-  return { parsed, totalRegs, totalPunt, totalTarde, promGlobal,
-           statsGrupo:[], statsPersona:[], statsDia:[],
-           pctGlobal:0, fechaFiltro:'', fechasDisp:[] };
+  const pctGlobal  = totalRegs ? Math.round(totalPunt/totalRegs*100) : 0;
+
+  return { parsed, parsedHoy, ultimaFecha, statsGrupo, statsPersona, statsDia, totalRegs, totalPunt, totalTarde, promGlobal, pctGlobal };
 }
 
-// ── CALCULAR ESTADÍSTICAS ─────────────────────────────────────
-function calcStats(registros) {
-  // Filtrar por fecha activa (por defecto la más reciente)
-  const fechaFiltro = getFechaFiltro(registros);
-  const fechasDisp  = getFechasDisponibles(registros);
-  const registrosFiltrados = fechaFiltro
-    ? registros.filter(r => parseFecha(r.fecha) === fechaFiltro)
-    : registros;
-
-  // registros = array de { nombre, grupo, fecha (string completo con hora), dia }
-  const parsed = registrosFiltrados.map(r => ({
-    ...r,
-    fechaDate : parseFecha(r.fecha),
-    horaStr   : parseHora(r.fecha),
-    min       : parseMin(r.fecha),
-  })).filter(r => r.min !== null);
-
-  // Por grupo
-  const grupos = {};
-  parsed.forEach(r => {
-    if (!grupos[r.grupo]) grupos[r.grupo] = [];
-    grupos[r.grupo].push(r);
-  });
-
-  const statsGrupo = Object.entries(grupos).map(([grupo, regs]) => {
-    const mins = regs.map(r => r.min).filter(m => m !== null);
-    const promMin = mins.length ? Math.round(mins.reduce((a,b)=>a+b,0)/mins.length) : null;
-    const puntuales = regs.filter(r => r.min !== null && r.min <= INICIO_MIN).length;
-    const pct = regs.length ? Math.round(puntuales/regs.length*100) : 0;
-    return { grupo, total: regs.length, promMin, puntuales, pct };
-  }).sort((a,b) => (a.promMin||999) - (b.promMin||999));
-
-  // Por persona
-  const personas = {};
-  parsed.forEach(r => {
-    if (!personas[r.nombre]) personas[r.nombre] = { nombre:r.nombre, grupo:r.grupo, regs:[] };
-    personas[r.nombre].regs.push(r);
-  });
-
-  const statsPersona = Object.values(personas).map(p => {
-    const mins = p.regs.map(r => r.min).filter(m => m !== null);
-    const promMin = mins.length ? Math.round(mins.reduce((a,b)=>a+b,0)/mins.length) : null;
-    const puntuales = p.regs.filter(r => r.min !== null && r.min <= INICIO_MIN).length;
-    const pct = p.regs.length ? Math.round(puntuales/p.regs.length*100) : 0;
-    const ultima = p.regs.sort((a,b)=>b.fechaDate.localeCompare(a.fechaDate))[0];
-    return { ...p, total: p.regs.length, promMin, puntuales, pct, ultima };
-  }).sort((a,b) => (a.promMin||999) - (b.promMin||999));
-
-  // Por día de la semana
-  const dias = {};
-  parsed.forEach(r => {
-    const d = r.dia || 'Sin día';
-    if (!dias[d]) dias[d] = [];
-    dias[d].push(r);
-  });
-
-  const statsDia = Object.entries(dias).map(([dia, regs]) => {
-    const mins = regs.map(r => r.min).filter(m => m !== null);
-    const promMin = mins.length ? Math.round(mins.reduce((a,b)=>a+b,0)/mins.length) : null;
-    const puntuales = regs.filter(r => r.min !== null && r.min <= INICIO_MIN).length;
-    const pct = regs.length ? Math.round(puntuales/regs.length*100) : 0;
-    return { dia, total: regs.length, promMin, puntuales, pct };
-  }).sort((a,b) => (a.promMin||999) - (b.promMin||999));
-
-  // KPIs globales
-  const totalRegs   = parsed.length;
-  const totalPunt   = parsed.filter(r => r.min <= INICIO_MIN).length;
-  const totalTarde  = totalRegs - totalPunt;
-  const pctGlobal   = totalRegs ? Math.round(totalPunt/totalRegs*100) : 0;
-  const allMins     = parsed.map(r=>r.min);
-  const promGlobal  = allMins.length ? Math.round(allMins.reduce((a,b)=>a+b,0)/allMins.length) : null;
-
-  return { parsed, statsGrupo, statsPersona, statsDia,
-           totalRegs, totalPunt, totalTarde, pctGlobal, promGlobal,
-           fechaFiltro, fechasDisp };
+// ── RENDER: solo la pestaña activa ────────────────────────────
+function renderTabActual() {
+  const stats = calcStats(DATA.registros || []);
+  if (tabActual === 'grupos')     renderGrupos(stats);
+  if (tabActual === 'individual') renderIndividual(stats);
+  if (tabActual === 'dias')       renderDias(stats);
+  if (tabActual === 'historial')  renderHistorial(stats);
 }
 
-// ── RENDER ALL ────────────────────────────────────────────────
-function renderAll(animate) {
-  if (!DATA) return;
-  const registros = DATA.registros || [];
-  const stats = calcStats(registros);
-  // Render siempre todos los paneles
-  renderGrupos(stats, animate);
-  renderIndividual(stats, animate);
-  renderDias(stats, animate);
-  // Historial usa todos los registros sin filtro de fecha
-  const allStats = calcStatsAll(registros);
-  renderHistorial(allStats);
+// ── RENDER ALL (primera carga) ────────────────────────────────
+function renderAll() {
+  const stats = calcStats(DATA.registros || []);
+  renderGrupos(stats);
+  renderIndividual(stats);
+  renderDias(stats);
+  renderHistorial(stats);
 }
 
-// ── RENDER: GRUPOS ────────────────────────────────────────────
-function renderGrupos(stats, animate) {
-  const { statsGrupo, totalRegs, totalPunt, totalTarde, pctGlobal, promGlobal, parsed, fechaFiltro, fechasDisp } = stats;
+// ── GRUPOS ────────────────────────────────────────────────────
+function renderGrupos(stats) {
+  const { statsGrupo, totalRegs, totalPunt, totalTarde, pctGlobal, promGlobal, parsed, parsedHoy, ultimaFecha } = stats;
+  const maxPunt = Math.max(...statsGrupo.map(g => g.puntuales), 1);
 
-  // Ordenar por: 1) mayor cantidad de puntuales, 2) mayor % como desempate
-  const ranked = [...statsGrupo].sort((a, b) =>
-    b.puntuales !== a.puntuales ? b.puntuales - a.puntuales : b.pct - a.pct
-  );
+  // KPIs basados en la última fecha
+  const totalRegsHoy  = parsedHoy.length;
+  const totalPuntHoy  = parsedHoy.filter(r => r.min <= INICIO_MIN).length;
+  const totalTardeHoy = totalRegsHoy - totalPuntHoy;
+  const pctHoy        = totalRegsHoy ? Math.round(totalPuntHoy/totalRegsHoy*100) : 0;
+  const allMinsHoy    = parsedHoy.map(r => r.min);
+  const promHoy       = allMinsHoy.length ? Math.round(allMinsHoy.reduce((a,b)=>a+b,0)/allMinsHoy.length) : null;
 
-  const maxPunt = Math.max(...ranked.map(g => g.puntuales), 1);
-
-  // Medallero: grupo campeón, segundo, tercero
-  const medalColors = ['#b45309','#6b7280','#92400e'];
-  const medalLabels = ['🥇','🥈','🥉'];
-
-  // Selector de fechas
-  const selectorFechas = fechasDisp.length > 1 ? `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-      <span style="font-size:11px;color:var(--muted);font-weight:500;">Semana:</span>
-      <div class="chips" style="margin:0;gap:5px;">
-        ${fechasDisp.slice(0,6).map(f => `
-          <div class="chip ${f===fechaFiltro?'active':''}"
-            onclick="fechaActiva='${f}';renderAll(false)">
-            ${f}
-          </div>`).join('')}
-        ${fechasDisp.length > 6 ? `<span style="font-size:11px;color:var(--muted)">+${fechasDisp.length-6} más</span>` : ''}
-      </div>
-    </div>` : '';
-
-  const html = `
-    ${selectorFechas}
-    <div style="background:var(--c2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-bottom:14px;font-size:12px;color:var(--c1);font-weight:500;">
-      Mostrando: ${fechaFiltro || 'Sin datos'} ${parsed.length ? `· ${parsed[0]?.dia||''}` : ''}
-    </div>
-    <div class="kpi-grid">
-      <div class="kpi ${animate?'flash':''}">
-        <div class="kpi-n">${totalRegs}</div><div class="kpi-l">Escaneos</div>
-      </div>
-      <div class="kpi ${animate?'flash':''}">
-        <div class="kpi-n ok">${totalPunt}</div><div class="kpi-l">Puntuales</div>
-      </div>
-      <div class="kpi ${animate?'flash':''}">
-        <div class="kpi-n late">${totalTarde}</div><div class="kpi-l">Tarde</div>
-      </div>
-      <div class="kpi ${animate?'flash':''}">
-        <div class="kpi-n ${pctGlobal>=80?'ok':pctGlobal>=50?'warn':'late'}">${pctGlobal}%</div>
-        <div class="kpi-l">Puntualidad global</div>
-      </div>
-      <div class="kpi ${animate?'flash':''}">
-        <div class="kpi-n ${classDif(promGlobal?promGlobal-INICIO_MIN:null)}">${formatMin(promGlobal)}</div>
-        <div class="kpi-l">Hora promedio</div>
-      </div>
-    </div>
-
+  document.getElementById('panelGrupos').innerHTML = `
     <!-- GANADOR -->
-    ${ranked.length ? (() => {
-      const g = ranked[0];
-      const cls = g.pct>=80?'ok':g.pct>=50?'warn':'late';
-      return `
-      <div style="
-        background:var(--c1);
-        border-radius:12px;
-        padding:20px;
-        margin-bottom:14px;
-        display:flex;
-        align-items:center;
-        gap:16px;
-        position:relative;
-        overflow:hidden;
-      ">
-        <!-- Líneas decorativas de fondo -->
-        <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:28px 28px;pointer-events:none"></div>
-
-        <!-- Icono corona -->
-        <div style="
-          width:52px;height:52px;
-          border:1.5px solid rgba(255,255,255,.3);
-          border-radius:50%;
-          display:flex;align-items:center;justify-content:center;
-          flex-shrink:0;
-          position:relative;z-index:1;
-          background:rgba(255,255,255,.08);
-        ">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 20h20M4 20l2-8 6 4 6-4 2 8"/>
-            <circle cx="12" cy="8" r="2" fill="rgba(255,255,255,.9)" stroke="none"/>
-            <circle cx="4"  cy="12" r="1.5" fill="rgba(255,255,255,.7)" stroke="none"/>
-            <circle cx="20" cy="12" r="1.5" fill="rgba(255,255,255,.7)" stroke="none"/>
-          </svg>
-        </div>
-
-        <!-- Info -->
-        <div style="flex:1;position:relative;z-index:1;min-width:0">
-          <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:3px">Grupo más puntual — ${fechaFiltro||''}</div>
-          <div style="font-size:20px;font-weight:700;color:#fff;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${g.grupo}</div>
-          <div style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.9)">${g.puntuales} miembros puntuales</span>
-            <span style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.4)"></span>
-            <span style="font-size:12px;color:rgba(255,255,255,.7)">${g.pct}% del grupo</span>
-            <span style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.4)"></span>
-            <span style="font-size:12px;color:rgba(255,255,255,.7)">Promedio ${formatMin(g.promMin)}</span>
-          </div>
-        </div>
-
-        <!-- Número grande decorativo -->
-        <div style="
-          font-size:72px;font-weight:800;
-          color:rgba(255,255,255,.06);
-          position:absolute;right:16px;top:50%;
-          transform:translateY(-50%);
-          line-height:1;
-          font-family:'Outfit',sans-serif;
-          pointer-events:none;
-          user-select:none;
-        ">${g.puntuales}</div>
-      </div>`;
-    })() : ''}
-
-    <!-- RANKING COMPLETO -->
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Ranking completo por grupos</span>
-        <span class="card-sub">Ordenado por personas puntuales</span>
+    ${statsGrupo.length ? `
+    <div style="background:var(--c1);border-radius:12px;padding:20px;margin-bottom:14px;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:28px 28px;pointer-events:none"></div>
+      <div style="width:52px;height:52px;border:1.5px solid rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.08);position:relative;z-index:1;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 20h20M4 20l2-8 6 4 6-4 2 8"/>
+          <circle cx="12" cy="8" r="2" fill="rgba(255,255,255,.9)" stroke="none"/>
+          <circle cx="4" cy="12" r="1.5" fill="rgba(255,255,255,.7)" stroke="none"/>
+          <circle cx="20" cy="12" r="1.5" fill="rgba(255,255,255,.7)" stroke="none"/>
+        </svg>
       </div>
+      <div style="flex:1;position:relative;z-index:1;min-width:0;">
+        <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:3px;">Grupo más puntual · ${ultimaFecha}</div>
+        <div style="font-size:20px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${statsGrupo[0].grupo}</div>
+        <div style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.9)">${statsGrupo[0].puntuales}/${statsGrupo[0].esperados} puntuales</span>
+          <span style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.4)"></span>
+          <span style="font-size:12px;color:rgba(255,255,255,.7)">${statsGrupo[0].pct}% del grupo</span>
+          <span style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.4)"></span>
+          <span style="font-size:12px;color:rgba(255,255,255,.7)">Promedio ${formatMin(statsGrupo[0].promMin)}</span>
+        </div>
+      </div>
+      <div style="font-size:72px;font-weight:800;color:rgba(255,255,255,.06);position:absolute;right:16px;top:50%;transform:translateY(-50%);line-height:1;pointer-events:none;">${statsGrupo[0].puntuales}</div>
+    </div>` : ''}
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-n">${totalRegsHoy}</div><div class="kpi-l">Escaneos</div></div>
+      <div class="kpi"><div class="kpi-n ok">${totalPuntHoy}</div><div class="kpi-l">Puntuales</div></div>
+      <div class="kpi"><div class="kpi-n late">${totalTardeHoy}</div><div class="kpi-l">Tarde</div></div>
+      <div class="kpi"><div class="kpi-n ${pctHoy>=80?'ok':pctHoy>=50?'warn':'late'}">${pctHoy}%</div><div class="kpi-l">Puntualidad</div></div>
+      <div class="kpi"><div class="kpi-n ${clsDif(promHoy?promHoy-INICIO_MIN:null)}">${formatMin(promHoy)}</div><div class="kpi-l">Hora promedio</div></div>
+    </div>
+
+    <!-- RANKING GRUPOS -->
+    <div class="card">
+      <div class="card-head"><span class="card-title">Ranking por grupos</span><span class="card-sub">${ultimaFecha} · Por cantidad de puntuales</span></div>
       <div class="card-body">
-        ${ranked.map((g, i) => {
+        ${statsGrupo.map((g,i) => {
           const cls = g.pct>=80?'ok':g.pct>=50?'warn':'late';
-          const barW = Math.round(g.puntuales / maxPunt * 100);
-          // Miembros puntuales del grupo con su hora (top 3)
-          const mbrsGrupo = parsed
-            .filter(r => r.grupo === g.grupo && r.min !== null && r.min <= INICIO_MIN)
-            .sort((a,b) => (a.min||999)-(b.min||999))
-            .slice(0,3);
-          return `<div class="row ${animate&&i<3?'new-entry':''}">
-            <div class="rn ${i===0?'g1':i===1?'g2':i===2?'g3':''}" style="font-size:14px">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+          const barW = Math.round(g.puntuales/maxPunt*100);
+          const top3 = parsedHoy.filter(r=>r.grupo===g.grupo&&r.min<=INICIO_MIN).sort((a,b)=>(a.min||0)-(b.min||0)).slice(0,3);
+          return `<div class="row">
+            <div class="rn ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
             <div class="rinfo">
               <div class="rname">${g.grupo}</div>
-              <div class="rsub">${g.puntuales} de ${g.total} llegaron puntual · ${g.pct}%</div>
-              <div style="display:flex;align-items:center;gap:6px;margin-top:5px">
-                <div style="flex:1;height:7px;background:var(--bg);border-radius:4px;overflow:hidden">
-                  <div style="width:${barW}%;height:100%;border-radius:4px;background:var(--${cls==='ok'?'ok':cls==='warn'?'warn':'late'});transition:width .5s"></div>
-                </div>
-                <span class="badge ${cls}">${g.puntuales} puntuales</span>
+              <div class="rsub">${g.puntuales}/${g.esperados} puntuales · ${g.pct}%${g.total < g.esperados ? ` <span style="color:var(--warn);font-size:10px;">(${g.total} escaneados)</span>` : ''}</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                <div style="flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;"><div style="width:${barW}%;height:100%;border-radius:3px;background:var(--${cls==='ok'?'ok':cls==='warn'?'warn':'late'});transition:width .5s;"></div></div>
+                <span class="badge ${cls}">${g.puntuales}</span>
               </div>
-              ${mbrsGrupo.length ? `<div style="margin-top:5px;display:flex;gap:4px;flex-wrap:wrap">
-                ${mbrsGrupo.map(r=>`<span style="font-size:10px;background:var(--ok-bg);color:var(--ok);padding:1px 6px;border-radius:10px">${r.nombre.split(' ')[0]} ${formatMin(r.min)}</span>`).join('')}
-              </div>` : ''}
+              ${top3.length?`<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;">${top3.map(r=>`<span style="font-size:10px;background:var(--ok-bg);color:var(--ok);padding:1px 6px;border-radius:10px;">${r.nombre.split(' ')[0]} <span style="font-family:'DM Mono',monospace;">${r.horaStr}</span></span>`).join('')}</div>`:''}
             </div>
-            <div style="text-align:right;flex-shrink:0">
-              <div class="rhora ${cls}">${formatMin(g.promMin)}</div>
-              <div style="font-size:10px;color:var(--muted);margin-top:2px">promedio</div>
-            </div>
+            <div class="rhora ${cls}">${formatMin(g.promMin)}</div>
           </div>`;
         }).join('')}
       </div>
@@ -611,269 +360,204 @@ function renderGrupos(stats, animate) {
 
     <!-- DETALLE POR GRUPO -->
     <div class="card">
-      <div class="card-head">
-        <span class="card-title">Detalle por grupo</span>
-        <span class="card-sub">Miembros puntuales vs tarde</span>
-      </div>
+      <div class="card-head"><span class="card-title">Detalle por grupo</span><span class="card-sub">${ultimaFecha}</span></div>
       <div class="card-body">
-        ${ranked.map(g => {
-          const puntGrupo = parsed
-            .filter(r => r.grupo === g.grupo && r.min !== null && r.min <= INICIO_MIN)
-            .sort((a,b)=>(a.min||0)-(b.min||0));
-          const tardeGrupo = parsed
-            .filter(r => r.grupo === g.grupo && r.min !== null && r.min > INICIO_MIN)
-            .sort((a,b)=>(a.min||0)-(b.min||0));
-          const cls = g.pct>=80?'ok':g.pct>=50?'warn':'late';
-          return `
-            <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--bg)">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-                <span style="font-size:13px;font-weight:600">${g.grupo}</span>
-                <span class="badge ${cls}">${g.pct}% puntual</span>
-              </div>
-              ${puntGrupo.length ? `
-              <div style="font-size:11px;color:var(--ok);font-weight:500;margin-bottom:4px">Puntuales (${puntGrupo.length})</div>
-              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
-                ${puntGrupo.map(r=>`
-                  <div style="background:var(--ok-bg);border:1px solid #86efac;border-radius:8px;padding:4px 8px;font-size:11px">
-                    <span style="font-weight:500;color:var(--ok)">${r.nombre.split(' ').slice(0,2).join(' ')}</span>
-                    <span style="color:var(--ok);font-family:'DM Mono',monospace;margin-left:4px">${r.horaStr}</span>
-                  </div>`).join('')}
-              </div>` : ''}
-              ${tardeGrupo.length ? `
-              <div style="font-size:11px;color:var(--late);font-weight:500;margin-bottom:4px">Tarde (${tardeGrupo.length})</div>
-              <div style="display:flex;flex-wrap:wrap;gap:4px">
-                ${tardeGrupo.map(r=>`
-                  <div style="background:var(--late-bg);border:1px solid #fca5a5;border-radius:8px;padding:4px 8px;font-size:11px">
-                    <span style="font-weight:500;color:var(--late)">${r.nombre.split(' ').slice(0,2).join(' ')}</span>
-                    <span style="color:var(--late);font-family:'DM Mono',monospace;margin-left:4px">${r.horaStr}</span>
-                  </div>`).join('')}
-              </div>` : ''}
-            </div>`;
+        ${statsGrupo.map(g => {
+          const punt  = parsedHoy.filter(r=>r.grupo===g.grupo&&r.min<=INICIO_MIN).sort((a,b)=>(a.min||0)-(b.min||0));
+          const tarde = parsedHoy.filter(r=>r.grupo===g.grupo&&r.min>INICIO_MIN).sort((a,b)=>(a.min||0)-(b.min||0));
+          const cls   = g.pct>=80?'ok':g.pct>=50?'warn':'late';
+          return `<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--bg);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:13px;font-weight:600;">${g.grupo}</span>
+              <span class="badge ${cls}">${g.pct}% · ${g.puntuales}/${g.esperados}</span>
+            </div>
+            ${punt.length?`<div style="font-size:11px;color:var(--ok);font-weight:500;margin-bottom:4px;">Puntuales (${punt.length})</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;">${punt.map(r=>`<div style="background:var(--ok-bg);border:1px solid #86efac;border-radius:8px;padding:4px 8px;font-size:11px;"><span style="font-weight:500;color:var(--ok);">${r.nombre.split(' ').slice(0,2).join(' ')}</span> <span style="font-family:'DM Mono',monospace;color:var(--ok);">${r.horaStr}</span></div>`).join('')}</div>`:''}
+            ${tarde.length?`<div style="font-size:11px;color:var(--late);font-weight:500;margin-bottom:4px;">Tarde (${tarde.length})</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;">${tarde.map(r=>`<div style="background:var(--late-bg);border:1px solid #fca5a5;border-radius:8px;padding:4px 8px;font-size:11px;"><span style="font-weight:500;color:var(--late);">${r.nombre.split(' ').slice(0,2).join(' ')}</span> <span style="font-family:'DM Mono',monospace;color:var(--late);">${r.horaStr}</span></div>`).join('')}</div>`:''}
+          </div>`;
         }).join('')}
       </div>
     </div>
   `;
-  document.getElementById('panelGrupos').innerHTML = html;
 }
 
-// ── RENDER: INDIVIDUAL ────────────────────────────────────────
-function renderIndividual(stats, animate) {
-  const { statsPersona, fechaFiltro, fechasDisp } = stats;
-  const grupos = ['Todos', ...new Set(statsPersona.map(p => p.grupo))].filter(Boolean);
-  const maxProm = Math.max(...statsPersona.map(p => p.promMin || 0), INICIO_MIN + 60);
-  const minProm = Math.min(...statsPersona.map(p => p.promMin || INICIO_MIN), INICIO_MIN - 30);
-  const range = maxProm - minProm || 1;
-
+// ── INDIVIDUAL ────────────────────────────────────────────────
+function renderIndividual(stats) {
+  const { statsPersona, parsed } = stats;
+  const grupos   = ['Todos', ...new Set(statsPersona.map(p=>p.grupo))].filter(Boolean);
   const filtered = statsPersona.filter(p =>
-    (filtroGrupo === 'Todos' || p.grupo === filtroGrupo) &&
-    (!filtroBusqueda || p.nombre.toLowerCase().includes(filtroBusqueda.toLowerCase()))
+    (filtroGrupo==='Todos'||p.grupo===filtroGrupo) &&
+    (!filtroBusq||p.nombre.toLowerCase().includes(filtroBusq.toLowerCase()))
   );
 
-  const html = `
-    <input class="search" id="searchInput" placeholder="Buscar persona…"
-      value="${filtroBusqueda}"
-      oninput="filtroBusqueda=this.value;renderIndividualOnly()">
-    <div class="chips">
-      ${grupos.map(g => `<div class="chip ${filtroGrupo===g?'active':''}"
-        onclick="filtroGrupo='${g}';document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));this.classList.add('active');renderIndividualOnly()">${g}</div>`).join('')}
-    </div>
+  document.getElementById('panelIndividual').innerHTML = `
+    <input class="search" id="srch" placeholder="Buscar persona…" value="${filtroBusq}"
+      oninput="filtroBusq=this.value;renderIndividualOnly()">
+    <div class="chips">${grupos.map(g=>`<div class="chip ${filtroGrupo===g?'active':''}"
+      onclick="filtroGrupo='${g}';document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));this.classList.add('active');renderIndividualOnly()">${g}</div>`).join('')}</div>
     <div class="card">
-      <div class="card-head">
-        <span class="card-title">Ranking individual de puntualidad</span>
-        <span class="card-sub">${filtered.length} personas</span>
-      </div>
-      <div class="card-body" id="rankBody">
-        ${renderRankRows(filtered, minProm, range, animate)}
-      </div>
-    </div>
-  `;
-  document.getElementById('panelIndividual').innerHTML = html;
+      <div class="card-head"><span class="card-title">Ranking individual</span><span class="card-sub">${filtered.length} personas</span></div>
+      <div class="card-body" id="rankBody">${renderRankRows(filtered)}</div>
+    </div>`;
 }
 
 function renderIndividualOnly() {
   if (!DATA) return;
-  const stats = calcStats(DATA.registros || []);
-  const { statsPersona } = stats;
-  const maxProm = Math.max(...statsPersona.map(p => p.promMin || 0), INICIO_MIN + 60);
-  const minProm = Math.min(...statsPersona.map(p => p.promMin || INICIO_MIN), INICIO_MIN - 30);
-  const range = maxProm - minProm || 1;
-  const filtered = statsPersona.filter(p =>
-    (filtroGrupo === 'Todos' || p.grupo === filtroGrupo) &&
-    (!filtroBusqueda || p.nombre.toLowerCase().includes(filtroBusqueda.toLowerCase()))
+  const stats = calcStats(DATA.registros||[]);
+  const filtered = stats.statsPersona.filter(p =>
+    (filtroGrupo==='Todos'||p.grupo===filtroGrupo) &&
+    (!filtroBusq||p.nombre.toLowerCase().includes(filtroBusq.toLowerCase()))
   );
-  const body = document.getElementById('rankBody');
-  if (body) body.innerHTML = renderRankRows(filtered, minProm, range, false);
+  const b = document.getElementById('rankBody');
+  if (b) b.innerHTML = renderRankRows(filtered);
 }
 
-function renderRankRows(filtered, minProm, range, animate) {
-  if (!filtered.length) return '<div class="empty">Sin resultados</div>';
-  return filtered.map((p, i) => {
-    const dif = p.promMin !== null ? p.promMin - INICIO_MIN : null;
-    const cls = classDif(dif);
-    const barW = p.promMin !== null ? Math.round((p.promMin - (minProm||0)) / (range||1) * 100) : 0;
-    const barWInv = 100 - barW;
-    return `<div class="row ${animate&&i<3?'new-entry':''}">
-      <div class="rn ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i+1}</div>
+function renderRankRows(list) {
+  if (!list.length) return '<div class="empty">Sin resultados</div>';
+  return list.map((p,i) => {
+    const dif = p.promMin - INICIO_MIN;
+    const cls = clsDif(dif);
+    return `<div class="row">
+      <div class="rn ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
       <div class="rinfo">
         <div class="rname">${p.nombre}</div>
-        <div class="rsub"><span class="tag">${p.grupo}</span> · ${p.total} asist. · ${p.pct}% puntual</div>
+        <div class="rsub"><span class="tag">${p.grupo}</span> · ${p.puntuales}/${p.total} puntual · ${p.pct}%</div>
       </div>
-      <div class="rbar">
-        <div class="rbar-t"><div class="rbar-f ${cls}" style="width:${Math.max(barWInv,5)}%"></div></div>
-        <div style="font-size:9px;color:var(--muted);text-align:right;margin-top:1px">${labelDif(dif)}</div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div class="rhora ${cls}">${formatMin(p.promMin)}</div>
+        <div style="font-size:10px;color:var(--${cls==='ok'?'ok':cls==='warn'?'warn':'late'});">${lblDif(dif)}</div>
       </div>
-      <div class="rhora ${cls}">${formatMin(p.promMin)}</div>
     </div>`;
   }).join('');
 }
 
-// ── RENDER: DÍAS ──────────────────────────────────────────────
-function renderDias(stats, animate) {
-  const { statsDia, parsed, fechaFiltro, fechasDisp } = stats;
-  const regsDia = diaSeleccionado
-    ? parsed.filter(r => r.dia === diaSeleccionado)
-    : [];
+// ── DÍAS ──────────────────────────────────────────────────────
+function renderDias(stats) {
+  const { statsDia, parsed } = stats;
+  const regsDia = diaSelec ? parsed.filter(r=>r.dia===diaSelec) : [];
 
-  const html = `
+  document.getElementById('panelDias').innerHTML = `
     <div class="dia-grid">
       ${statsDia.map(d => {
-        const dif = d.promMin !== null ? d.promMin - INICIO_MIN : null;
-        const cls = classDif(dif);
-        return `<div class="dia-card ${diaSeleccionado===d.dia?'sel':''}"
-          onclick="diaSeleccionado='${d.dia}';renderDiasOnly()">
+        const cls = d.pct>=80?'ok':d.pct>=50?'warn':'late';
+        return `<div class="dia-card ${diaSelec===d.dia?'sel':''}" onclick="diaSelec='${d.dia}';renderDiasOnly()">
           <div class="dia-name">${d.dia}</div>
           <div class="dia-hora" style="color:var(--${cls==='ok'?'ok':cls==='warn'?'warn':'late'})">${formatMin(d.promMin)}</div>
-          <div class="dia-cnt">${d.total} registros</div>
-          <div class="dia-pct" style="color:var(--${cls==='ok'?'ok':cls==='warn'?'warn':'late'})">${d.pct}% puntuales</div>
+          <div class="dia-cnt">${d.total} registros · ${d.pct}% puntual</div>
         </div>`;
       }).join('')}
     </div>
-
-    ${diaSeleccionado ? `
+    ${diaSelec ? `
     <div class="card">
-      <div class="card-head">
-        <span class="card-title">Detalle — ${diaSeleccionado}</span>
-        <span class="card-sub">${regsDia.length} registros</span>
-      </div>
+      <div class="card-head"><span class="card-title">${diaSelec}</span><span class="card-sub">${regsDia.length} registros</span></div>
       <div class="card-body">
-        ${regsDia.sort((a,b)=>(a.min||999)-(b.min||999)).map(r => {
-          const dif = r.min !== null ? r.min - INICIO_MIN : null;
-          const cls = classDif(dif);
+        ${regsDia.sort((a,b)=>(a.min||0)-(b.min||0)).map(r => {
+          const dif = r.min - INICIO_MIN;
+          const cls = clsDif(dif);
           return `<div class="hist">
             <div class="hist-f">${r.fechaDate}</div>
             <div class="hist-h ${cls}">${r.horaStr}</div>
-            <div class="rinfo"><div class="rname" style="font-size:12px">${r.nombre}</div>
+            <div class="rinfo"><div class="rname" style="font-size:12px;">${r.nombre}</div>
               <div class="rsub"><span class="tag">${r.grupo}</span></div></div>
-            <div class="hist-dif" style="color:var(--${cls==='ok'?'ok':cls==='warn'?'warn':'late'})">${labelDif(dif)}</div>
+            <div class="hist-dif" style="color:var(--${cls==='ok'?'ok':cls==='warn'?'warn':'late'})">${lblDif(dif)}</div>
           </div>`;
         }).join('')}
       </div>
-    </div>` : '<div class="empty">Selecciona un día para ver el detalle</div>'}
-  `;
-  document.getElementById('panelDias').innerHTML = html;
+    </div>` : '<div class="empty">Selecciona un día para ver el detalle</div>'}`;
 }
 
 function renderDiasOnly() {
   if (!DATA) return;
-  renderDias(calcStats(DATA.registros || []), false);
+  renderDias(calcStats(DATA.registros||[]));
 }
 
-// ── RENDER: HISTORIAL ─────────────────────────────────────────
+// ── HISTORIAL ─────────────────────────────────────────────────
 function renderHistorial(stats) {
-  // Historial siempre muestra todos los registros sin filtro de fecha
-  const allParsed = (DATA?.registros || []).map(r => ({
-    ...r,
-    fechaDate: parseFecha(r.fecha),
-    horaStr  : parseHora(r.fecha),
-    min      : parseMin(r.fecha),
-  })).filter(r => r.min !== null);
-  const parsed = allParsed;
-  const sorted = [...parsed].sort((a,b) => b.fechaDate.localeCompare(a.fechaDate) || (a.min||0)-(b.min||0));
+  const { parsed } = stats;
+  const sorted = [...parsed].sort((a,b) => b.fechaDate.localeCompare(a.fechaDate)||(a.min||0)-(b.min||0));
 
-  const html = `
+  document.getElementById('panelHistorial').innerHTML = `
     <div class="card">
-      <div class="card-head">
-        <span class="card-title">Historial completo de escaneos</span>
-        <span class="card-sub">${sorted.length} registros · más reciente primero</span>
-      </div>
+      <div class="card-head"><span class="card-title">Historial completo</span><span class="card-sub">${sorted.length} registros</span></div>
       <div class="card-body">
         ${sorted.length ? sorted.map(r => {
-          const dif = r.min !== null ? r.min - INICIO_MIN : null;
-          const cls = classDif(dif);
+          const dif = r.min - INICIO_MIN;
+          const cls = clsDif(dif);
           return `<div class="hist">
             <div class="hist-f">${r.fechaDate}</div>
             <div class="hist-d">${r.dia}</div>
             <div class="hist-h ${cls}">${r.horaStr}</div>
-            <div class="rinfo">
-              <div class="rname" style="font-size:12px">${r.nombre}</div>
-              <div class="rsub"><span class="tag">${r.grupo}</span></div>
-            </div>
-            <div class="hist-dif" style="color:var(--${cls==='ok'?'ok':cls==='warn'?'warn':'late'})">${labelDif(dif)}</div>
+            <div class="rinfo"><div class="rname" style="font-size:12px;">${r.nombre}</div>
+              <div class="rsub"><span class="tag">${r.grupo}</span></div></div>
+            <div class="hist-dif" style="color:var(--${cls==='ok'?'ok':cls==='warn'?'warn':'late'})">${lblDif(dif)}</div>
           </div>`;
         }).join('') : '<div class="empty">Sin registros</div>'}
       </div>
-    </div>
-  `;
-  document.getElementById('panelHistorial').innerHTML = html;
+    </div>`;
 }
 
-// ── LOADING / ERROR / SETUP ───────────────────────────────────
-function showLoadingAll() {
-  const loading = `<div class="loading"><div class="spinner"></div><p class="loading-msg">Cargando datos…</p></div>`;
-  ['panelGrupos','panelIndividual','panelDias','panelHistorial'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el && !el.innerHTML.trim()) el.innerHTML = loading;
+// ── FETCH JSONP ───────────────────────────────────────────────
+async function fetchData() {
+  const cbName = 'cb_' + Date.now();
+  const url = GAS_URL + '?vista=puntualidad&callback=' + cbName;
+
+  await new Promise(resolve => {
+    const script = document.createElement('script');
+    const timer  = setTimeout(() => { cleanup(); setLive(false); resolve(); }, 10000);
+
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    window[cbName] = json => {
+      cleanup();
+      if (json && json.registros) {
+        const isFirstLoad = prevCount === null;
+        // Hash basado en nombre+fecha de todos los registros para detectar cualquier cambio
+        const newHash = json.registros.map(r => r.nombre + r.fecha).join('|');
+        const changed = newHash !== prevCount;
+        prevCount = newHash;
+        DATA = json;
+        setLive(true);
+        updateTs();
+        if (isFirstLoad) {
+          renderAll();
+        } else if (changed) {
+          renderTabActual();
+        }
+      } else {
+        setLive(false);
+      }
+      resolve();
+    };
+
+    script.onerror = () => { cleanup(); setLive(false); resolve(); };
+    script.src = url;
+    document.head.appendChild(script);
   });
 }
 
-function showError(msg) {
-  const html = `<div class="err">Error al conectar con el servidor: ${msg}</div>`;
-  document.getElementById('panelGrupos').innerHTML = html;
+function setLive(on) {
+  const d = document.getElementById('liveDot');
+  if (d) d.className = 'live-dot ' + (on?'on':'off');
+}
+function updateTs() {
+  const el = document.getElementById('lastUpdate');
+  if (el) el.textContent = 'Actualizado ' + new Date().toLocaleTimeString('es-BO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
 
-function showSetup() {
-  const html = `
-    <div class="setup">
-      <h3>Configuración necesaria</h3>
-      <ol>
-        <li>Abre este archivo <code>puntualidad.html</code> en un editor de texto</li>
-        <li>Busca la línea: <code>const GAS_URL = 'TU_URL_APPS_SCRIPT_AQUÍ'</code></li>
-        <li>Reemplaza con la URL de tu Apps Script desplegado como Web App</li>
-        <li>Asegúrate de que el Apps Script tenga el endpoint <code>?vista=puntualidad</code></li>
-        <li>Guarda y sube el archivo a GitHub Pages</li>
-      </ol>
-    </div>`;
-  document.getElementById('panelGrupos').innerHTML = html;
+// ── POLLING ──────────────────────────────────────────────────
+function poll() {
+  fetchData().finally(() => {
+    const seg = modoEscaneo ? REFRESH_SEG : 5;
+    setTimeout(poll, seg * 1000);
+  });
 }
 
-// ── POLLING ADAPTATIVO ────────────────────────────────────────
-// 3s si estamos en ventana de escaneo (7:30–8:30 AM), 30s el resto del día
-function getRefreshMs() {
-  const now  = new Date();
-  const min  = now.getHours() * 60 + now.getMinutes();
-  const desde = 7 * 60 + 30;  // 7:30 AM
-  const hasta  = 8 * 60 + 30;  // 8:30 AM
-  const enVentana = min >= desde && min <= hasta;
-  const seg = enVentana ? REFRESH_SEG : 30;
-  // Actualizar badge del header
-  const dot  = document.getElementById('liveDot');
-  const badge = dot && dot.parentElement;
-  if (badge) badge.title = enVentana ? `Actualizando cada ${seg}s (ventana activa)` : `Actualizando cada ${seg}s`;
-  return seg * 1000;
-}
-
-function startPolling() {
-  if (refreshTimer) clearTimeout(refreshTimer);
-  const ms = getRefreshMs();
-  refreshTimer = setTimeout(async () => {
-    await fetchData(false);
-    startPolling(); // reprograma con intervalo recalculado
-  }, ms);
-}
-
-// ── INICIO ────────────────────────────────────────────────────
-fetchData(true);
-startPolling();
+poll();
 </script>
 </body>
 </html>
