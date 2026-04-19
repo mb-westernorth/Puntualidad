@@ -132,7 +132,7 @@ footer{text-align:center;padding:22px;font-size:10px;color:var(--muted);letter-s
 <script>
 // ══════════════════════════════════════════════════════════════
 //  CONFIGURACIÓN — edita solo esta línea:
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxjxD2mM1mfW37uu0AlfXAD0UWEpEbb1HFj5NFGVjpFbmTjq1eg4V6bvWcdhMO87ClcPg/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzEr3KSI9dxW1bbIZDd9feMmKpY75fSFz3-8pBmJVKc4RceN_nqBxJ0qKNwM3hAMgcpgg/exec';
 //  Ejemplo: 'https://script.google.com/macros/s/AKfycbXXX/exec'
 //  Intervalo de actualización en segundos (mínimo 10):
 const REFRESH_SEG = 3;
@@ -205,57 +205,66 @@ async function fetchData(showLoading) {
     return;
   }
 
-  try {
-    const url = GAS_URL + (GAS_URL.includes('?') ? '&' : '?') + 'vista=puntualidad';
-    const res  = await fetch(url, { cache: 'no-store' });
-    const text = await res.text();
+  // Apps Script con JSONP para evitar CORS
+  const cbName = 'gasCallback_' + Date.now();
+  const url = GAS_URL + (GAS_URL.includes('?') ? '&' : '?') + 'vista=puntualidad&callback=' + cbName;
 
-    // Intentar parsear JSON
-    let json;
-    try {
-      json = JSON.parse(text);
-    } catch(parseErr) {
-      // El GAS devolvió HTML en lugar de JSON — problema de configuración
+  await new Promise((resolve) => {
+    const script = document.createElement('script');
+    const timeout = setTimeout(() => {
+      cleanup();
       setLive(false);
-      if (!DATA) showError(`El Apps Script devolvió HTML en lugar de JSON.<br>
-        Verifica que el parámetro <code>vista=puntualidad</code> esté funcionando.<br>
-        <details><summary style="cursor:pointer;margin-top:6px">Ver respuesta raw</summary>
-        <pre style="font-size:10px;white-space:pre-wrap;margin-top:6px">${text.substring(0,500)}</pre></details>`);
-      return;
+      if (!DATA) showError('Tiempo de espera agotado. Verifica tu conexión y que el Apps Script esté desplegado correctamente.');
+      resolve();
+    }, 10000);
+
+    function cleanup() {
+      clearTimeout(timeout);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
     }
 
-    if (json.error) {
+    window[cbName] = (json) => {
+      cleanup();
+      try {
+        if (!json || !json.registros) {
+          setLive(false);
+          if (!DATA) showError('Respuesta inválida del servidor. Asegúrate de haber actualizado el Apps Script con el código más reciente.');
+          resolve();
+          return;
+        }
+
+        const hash = json.registros.length + '_' + (json.totalEscaneos || 0);
+        const changed = hash !== prevHash;
+        prevHash = hash;
+
+        DATA = json;
+        setLive(true);
+        updateTimestamp();
+
+        if (!initialized) {
+          initialized = true;
+          renderAll(false);
+        } else if (changed) {
+          renderAll(true);
+        }
+      } catch(e) {
+        setLive(false);
+        if (!DATA) showError('Error procesando datos: ' + e.message);
+      }
+      resolve();
+    };
+
+    script.onerror = () => {
+      cleanup();
       setLive(false);
-      if (!DATA) showError('Error en Apps Script: ' + json.error);
-      return;
-    }
+      if (!DATA) showError('No se pudo conectar al Apps Script. Verifica que esté desplegado con acceso <strong>Cualquier persona</strong>.');
+      resolve();
+    };
 
-    if (!json.registros) {
-      setLive(false);
-      if (!DATA) showError('La respuesta no tiene campo "registros". Respuesta: ' + JSON.stringify(json).substring(0,200));
-      return;
-    }
-
-    // Detectar cambios reales
-    const hash = json.registros.length + '_' + (json.totalEscaneos || 0);
-    const changed = hash !== prevHash;
-    prevHash = hash;
-
-    DATA = json;
-    setLive(true);
-    updateTimestamp();
-
-    // Siempre renderizar en primera carga
-    if (!initialized) {
-      initialized = true;
-      renderAll(false);
-    } else if (changed) {
-      renderAll(true);
-    }
-  } catch(e) {
-    setLive(false);
-    if (!DATA) showError('Error de red o CORS: ' + e.message + '<br><br>Verifica que tu Apps Script esté desplegado con acceso <strong>Cualquier persona</strong>.');
-  }
+    script.src = url;
+    document.head.appendChild(script);
+  });
 }
 
 function setLive(on) {
