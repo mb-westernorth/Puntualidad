@@ -245,9 +245,12 @@ async function fetchData(showLoading) {
     setLive(true);
     updateTimestamp();
 
-    if (changed || !initialized) {
+    // Siempre renderizar en primera carga
+    if (!initialized) {
       initialized = true;
-      renderAll(changed && !showLoading);
+      renderAll(false);
+    } else if (changed) {
+      renderAll(true);
     }
   } catch(e) {
     setLive(false);
@@ -329,6 +332,24 @@ function getFechaFiltro(registros) {
   if (fechaActiva) return fechaActiva;
   const fechas = getFechasDisponibles(registros);
   return fechas[0] || null;
+}
+
+function calcStatsAll(registros) {
+  // Versión sin filtro de fecha — para historial
+  const parsed = registros.map(r => ({
+    ...r,
+    fechaDate : parseFecha(r.fecha),
+    horaStr   : parseHora(r.fecha),
+    min       : parseMin(r.fecha),
+  })).filter(r => r.min !== null);
+  const totalRegs  = parsed.length;
+  const totalPunt  = parsed.filter(r => r.min <= INICIO_MIN).length;
+  const totalTarde = totalRegs - totalPunt;
+  const allMins    = parsed.map(r=>r.min);
+  const promGlobal = allMins.length ? Math.round(allMins.reduce((a,b)=>a+b,0)/allMins.length) : null;
+  return { parsed, totalRegs, totalPunt, totalTarde, promGlobal,
+           statsGrupo:[], statsPersona:[], statsDia:[],
+           pctGlobal:0, fechaFiltro:'', fechasDisp:[] };
 }
 
 // ── CALCULAR ESTADÍSTICAS ─────────────────────────────────────
@@ -413,19 +434,18 @@ function renderAll(animate) {
   if (!DATA) return;
   const registros = DATA.registros || [];
   const stats = calcStats(registros);
-
-  // Sync individual and dias panels with same fecha filter
+  // Render siempre todos los paneles
   renderGrupos(stats, animate);
-  if (tabActual === 'individual') renderIndividual(stats, animate);
-  if (tabActual === 'dias')       renderDias(stats, animate);
-  if (tabActual === 'historial')  renderHistorial(calcStats(registros)); // historial muestra todo
-  // Always render grupos (default tab)
-  if (tabActual !== 'grupos') renderGrupos(stats, false);
+  renderIndividual(stats, animate);
+  renderDias(stats, animate);
+  // Historial usa todos los registros sin filtro de fecha
+  const allStats = calcStatsAll(registros);
+  renderHistorial(allStats);
 }
 
 // ── RENDER: GRUPOS ────────────────────────────────────────────
 function renderGrupos(stats, animate) {
-  const { statsGrupo, totalRegs, totalPunt, totalTarde, pctGlobal, promGlobal, parsed } = stats;
+  const { statsGrupo, totalRegs, totalPunt, totalTarde, pctGlobal, promGlobal, parsed, fechaFiltro, fechasDisp } = stats;
 
   // Ordenar por: 1) mayor cantidad de puntuales, 2) mayor % como desempate
   const ranked = [...statsGrupo].sort((a, b) =>
@@ -629,7 +649,7 @@ function renderGrupos(stats, animate) {
 
 // ── RENDER: INDIVIDUAL ────────────────────────────────────────
 function renderIndividual(stats, animate) {
-  const { statsPersona } = stats;
+  const { statsPersona, fechaFiltro, fechasDisp } = stats;
   const grupos = ['Todos', ...new Set(statsPersona.map(p => p.grupo))].filter(Boolean);
   const maxProm = Math.max(...statsPersona.map(p => p.promMin || 0), INICIO_MIN + 60);
   const minProm = Math.min(...statsPersona.map(p => p.promMin || INICIO_MIN), INICIO_MIN - 30);
@@ -700,7 +720,7 @@ function renderRankRows(filtered, minProm, range, animate) {
 
 // ── RENDER: DÍAS ──────────────────────────────────────────────
 function renderDias(stats, animate) {
-  const { statsDia, parsed } = stats;
+  const { statsDia, parsed, fechaFiltro, fechasDisp } = stats;
   const regsDia = diaSeleccionado
     ? parsed.filter(r => r.dia === diaSeleccionado)
     : [];
