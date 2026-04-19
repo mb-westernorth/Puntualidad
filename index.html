@@ -1,1 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misión Boliviana Occidental Norte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --gold: #c9a84c;
+    --gold2: #e8c97a;
+    --cream: #faf7f2;
+    --muted: #6b6b7a;
+    --line: rgba(201,168,76,0.25);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: .4;
+  }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+    position: relative;
+  }
+
+  /* Geometric background lines */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .emblem {
+    width: 96px;
+    height: 96px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+    position: relative;
+    animation: fadeUp .8s ease both;
+  }
+  .emblem::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 0.5px solid var(--gold2);
+    border-radius: 50%;
+    opacity: .5;
+  }
+  .emblem svg { width: 44px; height: 44px; }
+
+  .org-tag {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    animation: fadeUp .8s .1s ease both;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 7vw, 3.8rem);
+    font-weight: 300;
+    line-height: 1.1;
+    text-align: center;
+    letter-spacing: -.5px;
+    margin-bottom: 8px;
+    animation: fadeUp .8s .2s ease both;
+  }
+  h1 span { font-weight: 600; color: var(--gold); }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeUp .8s .3s ease both;
+  }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 360px;
+    margin-bottom: 48px;
+    animation: fadeUp .8s .35s ease both;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 0.5px;
+    background: var(--gold);
+    opacity: .4;
+  }
+  .divider-diamond {
+    width: 6px; height: 6px;
+    background: var(--gold);
+    transform: rotate(45deg);
+  }
+
+  /* Info cards */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    width: 100%;
+    max-width: 640px;
+    margin-bottom: 56px;
+    animation: fadeUp .8s .4s ease both;
+  }
+
+  .card {
+    background: white;
+    border: 0.5px solid rgba(201,168,76,.2);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .card-icon {
+    width: 36px; height: 36px;
+    background: rgba(201,168,76,.08);
+    border: 0.5px solid rgba(201,168,76,.3);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px;
+  }
+  .card-icon svg { width: 18px; height: 18px; stroke: var(--gold); fill: none; stroke-width: 1.5; }
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .card-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* Verse */
+  .verse {
+    max-width: 480px;
+    text-align: center;
+    animation: fadeUp .8s .5s ease both;
+  }
+  .verse-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.7;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .verse-ref {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    opacity: .7;
+    border-top: 0.5px solid var(--line);
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scan indicator */
+  .scan-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(201,168,76,.08);
+    border: 0.5px solid rgba(201,168,76,.3);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 40px;
+    animation: fadeUp .8s .45s ease both;
+  }
+  .scan-dot {
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .4; transform: scale(.7); }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="emblem">
+    <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22 6L26.5 15.5H37L28.5 21.5L32 31L22 25L12 31L15.5 21.5L7 15.5H17.5L22 6Z"
+        stroke="#c9a84c" stroke-width="1.2" stroke-linejoin="round"/>
+      <circle cx="22" cy="22" r="4" stroke="#c9a84c" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <div class="org-tag">Misión Boliviana Occidental Norte</div>
+
+  <h1>Bienvenido a<br><span>MBON</span></h1>
+  <div class="subtitle">Iglesia Adventista del Séptimo Día</div>
+
+  <div class="divider"><div class="divider-diamond"></div></div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </div>
+      <div class="card-label">Ubicación</div>
+      <div class="card-value">La Paz, Bolivia</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div class="card-label">Culto principal</div>
+      <div class="card-value">Sábados 9:00 AM</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <div class="card-label">Grupos pastorales</div>
+      <div class="card-value">8 grupos activos</div>
+    </div>
+  </div>
+
+  <div class="scan-badge">
+    <div class="scan-dot"></div>
+    Tarjeta de miembro verificada
+  </div>
+
+  <div class="verse">
+    <div class="verse-text">
+      "Porque yo sé los pensamientos que tengo acerca de vosotros,
+      pensamientos de paz y no de mal, para daros el fin que esperáis."
+    </div>
+    <div class="verse-ref">Jeremías 29:11</div>
+  </div>
+</section>
+
+<footer>
+  © 2026 Misión Boliviana Occidental Norte &nbsp;·&nbsp; IASD
+</footer>
+
+</body>
+</html>
