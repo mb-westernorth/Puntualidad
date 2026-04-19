@@ -88,7 +88,7 @@ footer{text-align:center;padding:22px;font-size:10px;color:var(--muted);letter-s
 <body>
 
 <script>
-const GAS_URL    = 'https://script.google.com/macros/s/AKfycbyQS2vSHYq-BdbYSml1EPaUFy7UQxCAqc4Ftof-Kp3qCuIkxIgnCmCl3eEDSU3F90v7iA/exec';
+const GAS_URL    = 'https://script.google.com/macros/s/AKfycbx9CfsHO56sGyryhrgQh6jQ3KY_itn1RuaexItmAqxR2-ltwhQJ2BNOx-WKIEKIP9g2hg/exec';
 const REFRESH_SEG = 5;
 const INICIO_MIN  = 8 * 60; // 8:00 AM
 </script>
@@ -102,7 +102,7 @@ const INICIO_MIN  = 8 * 60; // 8:00 AM
       <h1>Puntualidad MBON</h1>
       <p>Misión Boliviana Occidental Norte</p>
       <div class="h-meta">
-        <div class="h-badge"><div class="live-dot on" id="liveDot"></div>En vivo</div>
+        <div class="h-badge"><div class="live-dot on" id="liveDot"></div>En tiempo real</div>
         <div class="h-badge">Inicio: 8:00 AM</div>
         <div class="h-badge" id="modoBadge" style="cursor:pointer;user-select:none;" onclick="toggleModo()">
           <span id="modoIcon">⏸</span> <span id="modoLabel">30s</span>
@@ -380,6 +380,55 @@ function renderGrupos(stats) {
         }).join('')}
       </div>
     </div>
+
+    <!-- RANKING SEMANAL -->
+    ${(() => {
+      const gmapS = {};
+      parsed.forEach(r => {
+        if (!gmapS[r.grupo]) gmapS[r.grupo] = [];
+        gmapS[r.grupo].push(r);
+      });
+      const fechas = [...new Set(parsed.map(r => r.fechaDate))].sort((a,b) => parseFechaNum(a)-parseFechaNum(b));
+      const label  = fechas.length > 1 ? fechas[0] + ' — ' + fechas[fechas.length-1] : fechas[0] || '';
+      const totalPorGrupoS = (DATA && DATA.totalPorGrupo) || {};
+      const rankS = Object.entries(gmapS).map(([grupo, regs]) => {
+        const punt       = regs.filter(r => r.min <= INICIO_MIN).length;
+        const tarde      = regs.filter(r => r.min > INICIO_MIN).length;
+        const dias       = [...new Set(regs.map(r => r.fechaDate))].length;
+        const esperados  = totalPorGrupoS[grupo] || regs.length;
+        // pct = puntuales sobre el total de registros del grupo en la semana
+        const pctBarra   = regs.length ? Math.round(punt / regs.length * 100) : 0;
+        // pct del grupo = puntuales sobre (esperados × días con registros)
+        const pctGrupo   = Math.round(punt / (esperados * dias) * 100);
+        return { grupo, puntuales: punt, tarde, dias, pctBarra, pctGrupo, total: regs.length };
+      }).sort((a,b) => b.puntuales !== a.puntuales ? b.puntuales - a.puntuales : b.pctBarra - a.pctBarra);
+      const maxP = Math.max(...rankS.map(g => g.puntuales), 1);
+      return `<div class="card">
+        <div class="card-head">
+          <span class="card-title">🏆 Ranking de la semana</span>
+          <span class="card-sub">${label} · ${fechas.length} día${fechas.length!==1?'s':''}</span>
+        </div>
+        <div class="card-body">
+          ${rankS.map((g,i) => {
+            const cls  = g.pctBarra>=80?'ok':g.pctBarra>=50?'warn':'late';
+            const barW = Math.round(g.puntuales/maxP*100);
+            return `<div class="row">
+              <div class="rn ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+              <div class="rinfo">
+                <div class="rname">${g.grupo}</div>
+                <div class="rsub">${g.puntuales} puntuales · <span style="color:var(--muted);font-size:10px;">${g.dias} día${g.dias!==1?'s':''} · ${g.pctBarra}% de asistentes</span></div>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                  <div style="flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;">
+                    <div style="width:${barW}%;height:100%;border-radius:3px;background:var(--${cls==='ok'?'ok':cls==='warn'?'warn':'late'});transition:width .5s;"></div>
+                  </div>
+                  <span class="badge ${cls}">${g.puntuales}</span>
+                </div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    })()}
   `;
 }
 
