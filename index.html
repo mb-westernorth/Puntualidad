@@ -138,6 +138,7 @@ let tabActual = 'grupos';
 let filtroGrupo = 'Todos';
 let filtroBusq  = '';
 let diaSelec    = null;
+let fechaSelecGrupos = null; // null = última fecha
 let refreshTimer = null;
 let modoEscaneo  = false;
 
@@ -158,6 +159,7 @@ function toggleModo() {
     badge.style.borderColor = '';
   }
 }
+
 function showTab(id, btn) {
   tabActual = id;
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -166,6 +168,7 @@ function showTab(id, btn) {
   btn.classList.add('active');
   if (DATA) renderTabActual();
 }
+
 function parseMin(f) {
   if (!f) return null;
   const p = f.trim().split(' ');
@@ -197,9 +200,18 @@ function calcStats(registros) {
     horaStr:   parseHora(r.fecha),
     min:       parseMin(r.fecha),
   })).filter(r => r.min !== null);
+
   const ultimaFecha = parsed.reduce((max, r) =>
     parseFechaNum(r.fechaDate) > parseFechaNum(max) ? r.fechaDate : max, '');
-  const parsedHoy = parsed.filter(r => r.fechaDate === ultimaFecha);
+
+  const fechaActiva = (fechaSelecGrupos && parsed.some(r => r.fechaDate === fechaSelecGrupos))
+    ? fechaSelecGrupos : ultimaFecha;
+
+  const parsedHoy = parsed.filter(r => r.fechaDate === fechaActiva);
+
+  const todasFechas = [...new Set(parsed.map(r => r.fechaDate))]
+    .sort((a,b) => parseFechaNum(b) - parseFechaNum(a));
+
   const gmap = {};
   parsedHoy.forEach(r => {
     if (!gmap[r.grupo]) gmap[r.grupo] = [];
@@ -250,8 +262,9 @@ function calcStats(registros) {
   const promGlobal = allMins.length ? Math.round(allMins.reduce((a,b)=>a+b,0)/allMins.length) : null;
   const pctGlobal  = totalRegs ? Math.round(totalPunt/totalRegs*100) : 0;
 
-  return { parsed, parsedHoy, ultimaFecha, statsGrupo, statsPersona, statsDia, totalRegs, totalPunt, totalTarde, promGlobal, pctGlobal };
+  return { parsed, parsedHoy, ultimaFecha, fechaActiva, todasFechas, statsGrupo, statsPersona, statsDia, totalRegs, totalPunt, totalTarde, promGlobal, pctGlobal };
 }
+
 function renderTabActual() {
   const stats = calcStats(DATA.registros || []);
   if (tabActual === 'grupos')     renderGrupos(stats);
@@ -259,6 +272,7 @@ function renderTabActual() {
   if (tabActual === 'dias')       renderDias(stats);
   if (tabActual === 'historial')  renderHistorial(stats);
 }
+
 function renderAll() {
   const stats = calcStats(DATA.registros || []);
   renderGrupos(stats);
@@ -266,9 +280,11 @@ function renderAll() {
   renderDias(stats);
   renderHistorial(stats);
 }
+
 function renderGrupos(stats) {
-  const { statsGrupo, totalRegs, totalPunt, totalTarde, pctGlobal, promGlobal, parsed, parsedHoy, ultimaFecha } = stats;
+  const { statsGrupo, totalRegs, totalPunt, totalTarde, pctGlobal, promGlobal, parsed, parsedHoy, ultimaFecha, fechaActiva, todasFechas } = stats;
   const maxPunt = Math.max(...statsGrupo.map(g => g.puntuales), 1);
+
   const totalRegsHoy  = parsedHoy.length;
   const totalPuntHoy  = parsedHoy.filter(r => r.min <= INICIO_MIN).length;
   const totalTardeHoy = totalRegsHoy - totalPuntHoy;
@@ -277,6 +293,15 @@ function renderGrupos(stats) {
   const promHoy       = allMinsHoy.length ? Math.round(allMinsHoy.reduce((a,b)=>a+b,0)/allMinsHoy.length) : null;
 
   document.getElementById('panelGrupos').innerHTML = `
+    <!-- SELECTOR DE FECHA -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+      <span style="font-size:12px;font-weight:600;color:var(--muted);">Mostrando ranking del día</span>
+      <select onchange="fechaSelecGrupos=this.value;renderTabActual()"
+        style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:'Outfit',sans-serif;background:var(--white);color:var(--ink);cursor:pointer;outline:none;">
+        ${todasFechas.map(f => `<option value="${f}" ${f===fechaActiva?'selected':''}>${f}${f===ultimaFecha?' (hoy)':''}</option>`).join('')}
+      </select>
+    </div>
+
     <!-- GANADOR -->
     ${statsGrupo.length ? `
     <div style="background:var(--c1);border-radius:12px;padding:20px;margin-bottom:14px;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;">
@@ -290,7 +315,7 @@ function renderGrupos(stats) {
         </svg>
       </div>
       <div style="flex:1;position:relative;z-index:1;min-width:0;">
-        <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:3px;">Grupo más puntual · ${ultimaFecha}</div>
+        <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:3px;">Grupo más puntual · ${fechaActiva}</div>
         <div style="font-size:20px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${statsGrupo[0].grupo}</div>
         <div style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.9)">${statsGrupo[0].puntuales} puntuales</span>
@@ -314,7 +339,7 @@ function renderGrupos(stats) {
 
     <!-- RANKING GRUPOS -->
     <div class="card">
-      <div class="card-head"><span class="card-title">Ranking por grupos</span><span class="card-sub">${ultimaFecha} · Por cantidad de puntuales</span></div>
+      <div class="card-head"><span class="card-title">Ranking por grupos</span><span class="card-sub">${fechaActiva} · Por cantidad de puntuales</span></div>
       <div class="card-body">
         ${statsGrupo.map((g,i) => {
           const cls  = g.pctBarra>=80?'ok':g.pctBarra>=50?'warn':'late';
@@ -339,7 +364,7 @@ function renderGrupos(stats) {
 
     <!-- DETALLE POR GRUPO -->
     <div class="card">
-      <div class="card-head"><span class="card-title">Detalle por grupo</span><span class="card-sub">${ultimaFecha}</span></div>
+      <div class="card-head"><span class="card-title">Detalle por grupo</span><span class="card-sub">${fechaActiva}</span></div>
       <div class="card-body">
         ${statsGrupo.map(g => {
           const punt  = parsedHoy.filter(r=>r.grupo===g.grupo&&r.min<=INICIO_MIN).sort((a,b)=>(a.min||0)-(b.min||0));
@@ -374,7 +399,9 @@ function renderGrupos(stats) {
         const tarde      = regs.filter(r => r.min > INICIO_MIN).length;
         const dias       = [...new Set(regs.map(r => r.fechaDate))].length;
         const esperados  = totalPorGrupoS[grupo] || regs.length;
+        // pct = puntuales sobre el total de registros del grupo en la semana
         const pctBarra   = regs.length ? Math.round(punt / regs.length * 100) : 0;
+        // pct del grupo = puntuales sobre (esperados × días con registros)
         const pctGrupo   = Math.round(punt / (esperados * dias) * 100);
         return { grupo, puntuales: punt, tarde, dias, pctBarra, pctGrupo, total: regs.length };
       }).sort((a,b) => b.puntuales !== a.puntuales ? b.puntuales - a.puntuales : b.pctBarra - a.pctBarra);
@@ -407,6 +434,7 @@ function renderGrupos(stats) {
     })()}
   `;
 }
+
 function renderIndividual(stats) {
   const { statsPersona, parsed } = stats;
   const grupos   = ['Todos', ...new Set(statsPersona.map(p=>p.grupo))].filter(Boolean);
@@ -455,6 +483,7 @@ function renderRankRows(list) {
     </div>`;
   }).join('');
 }
+
 function renderDias(stats) {
   const { statsDia, parsed } = stats;
   const regsDia = diaSelec ? parsed.filter(r=>r.dia===diaSelec) : [];
@@ -493,6 +522,7 @@ function renderDiasOnly() {
   if (!DATA) return;
   renderDias(calcStats(DATA.registros||[]));
 }
+
 function renderHistorial(stats) {
   const { parsed } = stats;
   const sorted = [...parsed].sort((a,b) => b.fechaDate.localeCompare(a.fechaDate)||(a.min||0)-(b.min||0));
@@ -516,6 +546,7 @@ function renderHistorial(stats) {
       </div>
     </div>`;
 }
+
 async function fetchData() {
   const cbName = 'cb_' + Date.now();
   const url = GAS_URL + '?vista=puntualidad&callback=' + cbName;
@@ -534,7 +565,6 @@ async function fetchData() {
       cleanup();
       if (json && json.registros) {
         const isFirstLoad = prevCount === null;
-        // Hash basado en nombre+fecha de todos los registros para detectar cualquier cambio
         const newHash = json.registros.map(r => r.nombre + r.fecha).join('|');
         const changed = newHash !== prevCount;
         prevCount = newHash;
@@ -566,7 +596,6 @@ function updateTs() {
   const el = document.getElementById('lastUpdate');
   if (el) el.textContent = 'Actualizado ' + new Date().toLocaleTimeString('es-BO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
-
 function poll() {
   fetchData().finally(() => {
     const seg = modoEscaneo ? REFRESH_SEG : 5;
