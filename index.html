@@ -132,7 +132,6 @@ const INICIO_MIN  = 8 * 60; // 8:00 AM
 <footer>© 2026 Misión Boliviana Occidental Norte · IASD</footer>
 
 <script>
-// ── ESTADO ────────────────────────────────────────────────────
 let DATA = null;
 let prevCount = null;
 let tabActual = 'grupos';
@@ -159,8 +158,6 @@ function toggleModo() {
     badge.style.borderColor = '';
   }
 }
-
-// ── TABS ──────────────────────────────────────────────────────
 function showTab(id, btn) {
   tabActual = id;
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -169,8 +166,6 @@ function showTab(id, btn) {
   btn.classList.add('active');
   if (DATA) renderTabActual();
 }
-
-// ── HELPERS ───────────────────────────────────────────────────
 function parseMin(f) {
   if (!f) return null;
   const p = f.trim().split(' ');
@@ -188,7 +183,6 @@ function formatMin(m) {
 function clsDif(d) { if(d===null)return'warn'; if(d<=0)return'ok'; if(d<=15)return'warn'; return'late'; }
 function lblDif(d) { if(d===null)return'—'; if(d<0)return`${Math.abs(d)}m antes`; if(d===0)return'Exacto'; return`+${d}m tarde`; }
 
-// ── CALCULAR ──────────────────────────────────────────────────
 function parseFechaNum(f) {
   // "19/04/2026" → 20260419 para comparar
   if (!f) return 0;
@@ -203,15 +197,9 @@ function calcStats(registros) {
     horaStr:   parseHora(r.fecha),
     min:       parseMin(r.fecha),
   })).filter(r => r.min !== null);
-
-  // Detectar última fecha con registros
   const ultimaFecha = parsed.reduce((max, r) =>
     parseFechaNum(r.fechaDate) > parseFechaNum(max) ? r.fechaDate : max, '');
-
-  // Para el ranking de grupos: solo registros de la última fecha
   const parsedHoy = parsed.filter(r => r.fechaDate === ultimaFecha);
-
-  // Por grupo (solo última fecha)
   const gmap = {};
   parsedHoy.forEach(r => {
     if (!gmap[r.grupo]) gmap[r.grupo] = [];
@@ -228,7 +216,6 @@ function calcStats(registros) {
     return { grupo, total: regs.length, esperados, promMin: prom, puntuales: punt, pct, pctBarra };
   }).sort((a,b) => b.puntuales !== a.puntuales ? b.puntuales - a.puntuales : b.pct - a.pct);
 
-  // Por persona
   const pmap = {};
   parsed.forEach(r => {
     if (!pmap[r.nombre]) pmap[r.nombre] = { nombre:r.nombre, grupo:r.grupo, regs:[] };
@@ -242,7 +229,6 @@ function calcStats(registros) {
     return { ...p, total: p.regs.length, promMin: prom, puntuales: punt, pct };
   }).sort((a,b) => b.puntuales !== a.puntuales ? b.puntuales - a.puntuales : b.pct - a.pct);
 
-  // Por día
   const dmap = {};
   parsed.forEach(r => {
     const d = r.dia||'Sin día';
@@ -266,8 +252,6 @@ function calcStats(registros) {
 
   return { parsed, parsedHoy, ultimaFecha, statsGrupo, statsPersona, statsDia, totalRegs, totalPunt, totalTarde, promGlobal, pctGlobal };
 }
-
-// ── RENDER: solo la pestaña activa ────────────────────────────
 function renderTabActual() {
   const stats = calcStats(DATA.registros || []);
   if (tabActual === 'grupos')     renderGrupos(stats);
@@ -275,8 +259,6 @@ function renderTabActual() {
   if (tabActual === 'dias')       renderDias(stats);
   if (tabActual === 'historial')  renderHistorial(stats);
 }
-
-// ── RENDER ALL (primera carga) ────────────────────────────────
 function renderAll() {
   const stats = calcStats(DATA.registros || []);
   renderGrupos(stats);
@@ -284,13 +266,9 @@ function renderAll() {
   renderDias(stats);
   renderHistorial(stats);
 }
-
-// ── GRUPOS ────────────────────────────────────────────────────
 function renderGrupos(stats) {
   const { statsGrupo, totalRegs, totalPunt, totalTarde, pctGlobal, promGlobal, parsed, parsedHoy, ultimaFecha } = stats;
   const maxPunt = Math.max(...statsGrupo.map(g => g.puntuales), 1);
-
-  // KPIs basados en la última fecha
   const totalRegsHoy  = parsedHoy.length;
   const totalPuntHoy  = parsedHoy.filter(r => r.min <= INICIO_MIN).length;
   const totalTardeHoy = totalRegsHoy - totalPuntHoy;
@@ -396,9 +374,7 @@ function renderGrupos(stats) {
         const tarde      = regs.filter(r => r.min > INICIO_MIN).length;
         const dias       = [...new Set(regs.map(r => r.fechaDate))].length;
         const esperados  = totalPorGrupoS[grupo] || regs.length;
-        // pct = puntuales sobre el total de registros del grupo en la semana
         const pctBarra   = regs.length ? Math.round(punt / regs.length * 100) : 0;
-        // pct del grupo = puntuales sobre (esperados × días con registros)
         const pctGrupo   = Math.round(punt / (esperados * dias) * 100);
         return { grupo, puntuales: punt, tarde, dias, pctBarra, pctGrupo, total: regs.length };
       }).sort((a,b) => b.puntuales !== a.puntuales ? b.puntuales - a.puntuales : b.pctBarra - a.pctBarra);
@@ -431,8 +407,6 @@ function renderGrupos(stats) {
     })()}
   `;
 }
-
-// ── INDIVIDUAL ────────────────────────────────────────────────
 function renderIndividual(stats) {
   const { statsPersona, parsed } = stats;
   const grupos   = ['Todos', ...new Set(statsPersona.map(p=>p.grupo))].filter(Boolean);
@@ -481,8 +455,6 @@ function renderRankRows(list) {
     </div>`;
   }).join('');
 }
-
-// ── DÍAS ──────────────────────────────────────────────────────
 function renderDias(stats) {
   const { statsDia, parsed } = stats;
   const regsDia = diaSelec ? parsed.filter(r=>r.dia===diaSelec) : [];
@@ -521,8 +493,6 @@ function renderDiasOnly() {
   if (!DATA) return;
   renderDias(calcStats(DATA.registros||[]));
 }
-
-// ── HISTORIAL ─────────────────────────────────────────────────
 function renderHistorial(stats) {
   const { parsed } = stats;
   const sorted = [...parsed].sort((a,b) => b.fechaDate.localeCompare(a.fechaDate)||(a.min||0)-(b.min||0));
@@ -546,8 +516,6 @@ function renderHistorial(stats) {
       </div>
     </div>`;
 }
-
-// ── FETCH JSONP ───────────────────────────────────────────────
 async function fetchData() {
   const cbName = 'cb_' + Date.now();
   const url = GAS_URL + '?vista=puntualidad&callback=' + cbName;
@@ -599,7 +567,6 @@ function updateTs() {
   if (el) el.textContent = 'Actualizado ' + new Date().toLocaleTimeString('es-BO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
 
-// ── POLLING ──────────────────────────────────────────────────
 function poll() {
   fetchData().finally(() => {
     const seg = modoEscaneo ? REFRESH_SEG : 5;
