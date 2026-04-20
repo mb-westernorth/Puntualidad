@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Puntualidad MBON — Monitor</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { width:100%; height:100%; }
+body {
+  font-family: 'Exo 2', 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0d1b2e 0%, #132238 50%, #1a2f47 100%);
+  height: 100vh;
+  color: white;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── FONDO ANIMADO ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(56,189,248,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,.025) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: gridMove 25s linear infinite;
+}
+@keyframes gridMove { to { background-position: 50px 50px; } }
+
+.container {
+  flex: 1; display: flex; flex-direction: column;
+  padding: 12px 14px 0; position: relative; z-index: 1;
+  overflow: hidden; min-height: 0;
+}
+
+/* ── HEADER ── */
+.compact-header {
+  background: rgba(255,255,255,.07);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 16px 24px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  animation: fadeDown .6s ease both;
+  flex-shrink: 0;
+}
+@keyframes fadeDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+
+.header-left {}
+.mission-text {
+  font-size: .75rem; color: #38bdf8; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px;
+}
+.group-title {
+  font-size: 1.9rem; color: #fbbf24; font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(251,191,36,.5);
+  margin-bottom: 4px;
+  animation: glow 3s ease-in-out infinite;
+}
+@keyframes glow {
+  0%,100% { text-shadow: 0 0 20px rgba(251,191,36,.5); }
+  50%      { text-shadow: 0 0 35px rgba(251,191,36,.9), 0 0 60px rgba(251,191,36,.3); }
+}
+.quorum-display {
+  background: rgba(251,191,36,.08);
+  padding: 8px 18px; border-radius: 8px;
+  border: 1px solid rgba(251,191,36,.25);
+  display: inline-block; margin-top: 4px;
+}
+.quorum {
+  font-size: 1.1rem; color: #fbbf24; font-weight: 700;
+  text-shadow: 0 0 12px rgba(251,191,36,.4);
+}
+.header-date {
+  font-size: .75rem; color: rgba(255,255,255,.4); margin-top: 4px;
+}
+.header-right { text-align: right; }
+.mision-text {
+  font-size: .9rem; color: #38bdf8; font-weight: 700;
+  letter-spacing: .5px;
+}
+.live-row {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 7px; margin-top: 8px;
+}
+.live-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,.6);
+  animation: blink 1.5s ease-in-out infinite;
+}
+.live-dot.off { background: #ef4444; box-shadow: 0 0 8px rgba(239,68,68,.6); animation: none; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+.live-txt { font-size: .8rem; font-weight: 700; color: #22c55e; }
+.formula-txt {
+  font-size: .7rem; color: #22c55e; margin-top: 5px;
+  background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.2);
+  border-radius: 5px; padding: 4px 10px; display: inline-block;
+}
+
+/* ── GRUPOS GRID ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+  flex: 1;
+  min-height: 0;
+}
+
+.stat-card {
+  background: rgba(255,255,255,.06);
+  backdrop-filter: blur(20px);
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(59,130,246,.25);
+  box-shadow: 0 6px 24px rgba(0,0,0,.3);
+  transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  animation: fadeUp .5s ease both;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.stat-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(59,130,246,.06), transparent);
+  pointer-events: none;
+}
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 40px rgba(0,0,0,.45);
+  border-color: rgba(59,130,246,.45);
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+.stat-card h3, .card-top {
+  font-size: .8rem; color: rgba(255,255,255,.5);
+  font-weight: 600; margin-bottom: 6px;
+  text-align: center; width: 100%;
+}
+.percentage {
+  font-size: 2.6rem; font-weight: 900;
+  color: #fbbf24;
+  text-shadow: 0 0 18px rgba(251,191,36,.45);
+  line-height: 1; margin-bottom: 5px;
+  transition: color .5s, text-shadow .5s;
+  width: 100%; text-align: center;
+}
+.percentage.high { color: #22c55e; text-shadow: 0 0 18px rgba(34,197,94,.5); }
+.percentage.mid  { color: #f59e0b; text-shadow: 0 0 18px rgba(245,158,11,.5); }
+.percentage.low  { color: #ef4444; text-shadow: 0 0 18px rgba(239,68,68,.5); }
+.group-name {
+  font-size: 1.05rem; font-weight: 800;
+  color: #e2e8f0; letter-spacing: .3px;
+  text-transform: uppercase; margin-bottom: 3px;
+  width: 100%; text-align: center;
+}
+.attendance-info { font-size: .78rem; color: #94a3b8; font-weight: 500; width: 100%; text-align: center; margin-bottom: 2px; }
+
+.punctuality-info {
+  font-size: .73rem; margin-top: 8px;
+  display: flex; flex-direction: row;
+  justify-content: space-between; align-items: center;
+  width: 100%;
+  border-top: 1px solid rgba(255,255,255,.07);
+  padding-top: 7px;
+}
+.punctuality-indicators { display: flex; gap: 5px; }
+.punctuality-indicator {
+  padding: 2px 8px; border-radius: 5px;
+  font-size: .7rem; font-weight: 700;
+}
+.punctuality-indicator.on-time {
+  background: rgba(34,197,94,.15); color: #22c55e;
+  border: 1px solid rgba(34,197,94,.25);
+}
+.punctuality-indicator.late {
+  background: rgba(239,68,68,.15); color: #ef4444;
+  border: 1px solid rgba(239,68,68,.25);
+}
+
+/* ── SUMMARY CARDS ── */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+.summary-card {
+  background: rgba(255,255,255,.07);
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 4px 16px rgba(0,0,0,.3);
+  animation: fadeUp .5s ease both;
+  transition: transform .2s ease;
+}
+.summary-card:hover { transform: translateY(-2px); }
+.summary-card.ok-card { border-color: rgba(34,197,94,.3); background: rgba(34,197,94,.07); }
+.summary-card.late-card { border-color: rgba(239,68,68,.3); background: rgba(239,68,68,.07); }
+.summary-card h3 { font-size: .7rem; color: rgba(255,255,255,.5); margin-bottom: 5px; font-weight: 500; }
+.summary-number {
+  font-size: 1.8rem; font-weight: 900;
+  color: #fbbf24;
+  text-shadow: 0 0 12px rgba(251,191,36,.4); line-height: 1;
+}
+.summary-number.ok   { color: #22c55e; text-shadow: 0 0 12px rgba(34,197,94,.4); }
+.summary-number.late { color: #ef4444; text-shadow: 0 0 12px rgba(239,68,68,.4); }
+.summary-number.blue { color: #38bdf8; text-shadow: 0 0 12px rgba(56,189,248,.4); }
+
+/* ── FOOTER ── */
+.footer-recent {
+  position: relative;
+  background: rgba(9,18,32,.97);
+  border-top: 1px solid rgba(59,130,246,.2);
+  padding: 0 16px;
+  z-index: 10;
+  box-shadow: 0 -6px 24px rgba(0,0,0,.5);
+  display: flex; align-items: center; gap: 14px;
+  flex-shrink: 0;
+  margin-top: 8px;
+  height: 68px;
+}
+.footer-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .7rem; font-weight: 700; color: rgba(255,255,255,.4);
+  letter-spacing: 1px; text-transform: uppercase; flex-shrink: 0;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255,255,255,.08);
+  padding-right: 14px; height: 100%;
+}
+.footer-toggle {
+  background: rgba(255,255,255,.07); border: none; color: rgba(255,255,255,.5);
+  font-size: .8rem; padding: 4px 8px; border-radius: 5px; cursor: pointer;
+  transition: background .2s; font-family: inherit;
+}
+.footer-toggle:hover { background: rgba(59,130,246,.25); color: #fff; }
+.footer-list {
+  flex: 1; overflow: hidden; position: relative;
+  height: 100%; display: flex; align-items: center;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+}
+.footer-ticker {
+  display: flex; gap: 10px; align-items: center;
+  animation: tickerSlide 30s linear infinite;
+  width: max-content; will-change: transform;
+}
+.footer-ticker:hover { animation-play-state: paused; }
+@keyframes tickerSlide {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.footer-item {
+  background: rgba(255,255,255,.055);
+  border-radius: 8px; padding: 8px 14px 8px 12px;
+  border: 1px solid rgba(255,255,255,.09);
+  display: inline-flex; align-items: center;
+  gap: 14px; flex-shrink: 0; position: relative; height: 50px;
+}
+.footer-item.on-time { border-left: 3px solid #22c55e; }
+.footer-item.late    { border-left: 3px solid #ef4444; }
+.fi-person { display: flex; flex-direction: column; gap: 2px; }
+.fi-name  { font-size: .85rem; font-weight: 700; color: #e2e8f0; white-space: nowrap; }
+.fi-group { font-size: .68rem; color: #38bdf8; font-weight: 600; white-space: nowrap; }
+.fi-date  {
+  font-size: .8rem; font-weight: 700; color: #fbbf24; white-space: nowrap;
+  text-shadow: 0 0 8px rgba(251,191,36,.3);
+}
+.fi-badge {
+  position: absolute; top: -6px; right: -6px;
+  width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .58rem; font-weight: 700; flex-shrink: 0;
+}
+.fi-badge.on-time { background: #22c55e; color: #fff; }
+.fi-badge.late    { background: #ef4444; color: #fff; }
+
+/* ── LOADING ── */
+.no-data {
+  text-align: center; color: #94a3b8;
+  font-style: italic; padding: 40px; font-size: 1rem;
+}
+.spinner-wrap { display: flex; align-items: center; justify-content: center; padding: 60px; }
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid rgba(255,255,255,.1);
+  border-top-color: #38bdf8; border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1200px) {
+  .summary-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .compact-header { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-list { flex-wrap: wrap; }
+}
+
+/* Stagger animations */
+.stat-card:nth-child(1) { animation-delay: .05s; }
+.stat-card:nth-child(2) { animation-delay: .10s; }
+.stat-card:nth-child(3) { animation-delay: .15s; }
+.stat-card:nth-child(4) { animation-delay: .20s; }
+.stat-card:nth-child(5) { animation-delay: .25s; }
+.stat-card:nth-child(6) { animation-delay: .30s; }
+.stat-card:nth-child(7) { animation-delay: .35s; }
+.stat-card:nth-child(8) { animation-delay: .40s; }
+.summary-card:nth-child(1) { animation-delay: .1s; }
+.summary-card:nth-child(2) { animation-delay: .15s; }
+.summary-card:nth-child(3) { animation-delay: .2s; }
+.summary-card:nth-child(4) { animation-delay: .25s; }
+.summary-card:nth-child(5) { animation-delay: .3s; }
+
+/* ── NOTIFICACIÓN LLEGADA ── */
+/* wrapper para el borde animado */
+#arrivalWrapper {
+  position: fixed;
+  bottom: 180px; right: 20px;
+  width: 340px;
+  z-index: 9999;
+  border-radius: 16px;
+  padding: 2px; /* grosor del borde */
+  background: linear-gradient(135deg, rgba(56,189,248,.6), rgba(129,140,248,.6), rgba(34,197,94,.6), rgba(56,189,248,.6));
+  background-size: 300% 300%;
+  animation: borderSpin 4s linear infinite;
+  transform: translate(120%, 120%) scale(.6);
+  opacity: 0;
+  transition: none;
+  pointer-events: none;
+  box-shadow: 0 0 20px rgba(56,189,248,.1), 0 20px 50px rgba(0,0,0,.5);
+}
+#arrivalWrapper.tarde-card {
+  background: linear-gradient(135deg, rgba(249,115,22,.5), rgba(239,68,68,.5), rgba(251,191,36,.5), rgba(249,115,22,.5));
+  background-size: 300% 300%;
+  box-shadow: 0 0 20px rgba(239,68,68,.12), 0 20px 60px rgba(0,0,0,.5);
+}
+@keyframes borderSpin {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 300% 300%; }
+}
+#arrivalWrapper.visible {
+  transform: translate(0,0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+  transition: transform .6s cubic-bezier(.34,1.4,.64,1), opacity .4s ease;
+  bottom: 180px; right: 24px;
+  top: auto; left: auto;
+  margin: 0;
+}
+#arrivalWrapper.hiding {
+  transform: translate(120%, 120%) scale(.6);
+  opacity: 0;
+  transition: transform .45s cubic-bezier(.4,0,1,1), opacity .3s ease;
+  bottom: 180px; right: 24px;
+  top: auto; left: auto;
+  margin: 0;
+  pointer-events: none;
+}
+
+#arrivalNotif {
+  width: 100%;
+  /* exactamente igual que stat-card */
+  background: #0f2038;
+  backdrop-filter: blur(20px);
+  border-radius: 13px;
+  padding: 13px 15px;
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+}
+#arrivalNotif::before {
+  content: '';
+  position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(135deg, rgba(59,130,246,.08), transparent);
+  pointer-events: none;
+  border-radius: 13px;
+}
+
+.an-band { display: none; }
+.an-body { padding: 0; }
+
+.an-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+}
+.an-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.an-icon.puntual { background: rgba(34,197,94,.15); border: 1px solid rgba(34,197,94,.3); }
+.an-icon.tarde   { background: rgba(239,68,68,.15);  border: 1px solid rgba(239,68,68,.3); }
+.an-label { font-size: .6rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.4); font-weight: 600; }
+.an-status { font-size: .82rem; font-weight: 800; margin-top: 2px; }
+.an-status.puntual { color: #22c55e; }
+.an-status.tarde   { color: #ef4444; }
+
+.an-nombre {
+  font-size: 1.2rem; font-weight: 900; color: #f1f5f9;
+  line-height: 1.1; margin-bottom: 3px; text-align: center;
+}
+.an-grupo {
+  font-size: .78rem; font-weight: 700; color: #38bdf8;
+  letter-spacing: .5px; text-transform: uppercase;
+  margin-bottom: 12px; text-align: center;
+}
+
+.an-footer {
+  display: flex; align-items: center; gap: 12px;
+  padding-top: 10px; border-top: 1px solid rgba(255,255,255,.07);
+}
+.an-hora {
+  font-family: 'DM Mono', monospace;
+  font-size: .9rem; font-weight: 700;
+  padding: 5px 14px; border-radius: 8px;
+}
+.an-hora.puntual { background: rgba(34,197,94,.12); color: #22c55e; border: 1px solid rgba(34,197,94,.25); }
+.an-hora.tarde   { background: rgba(239,68,68,.12);  color: #ef4444; border: 1px solid rgba(239,68,68,.25); }
+.an-progress {
+  flex: 1; height: 3px; background: rgba(255,255,255,.08);
+  border-radius: 2px; overflow: hidden;
+}
+.an-progress-bar {
+  height: 100%; border-radius: 2px; width: 100%;
+  background: linear-gradient(90deg, rgba(56,189,248,.6), rgba(129,140,248,.6));
+  animation: anProgress 4s linear forwards;
+}
+.an-progress-bar.tarde-bar {
+  background: linear-gradient(90deg, rgba(249,115,22,.6), rgba(239,68,68,.6));
+}
+@keyframes anProgress { from{width:100%} to{width:0%} }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="compact-header">
+    <div class="header-left">
+      <div class="mission-text">Bienvenida Digital – Ingreso por QR</div>
+      <div class="group-title">GP. EMUNÁ · Puntualidad</div>
+      <div class="quorum-display">
+        <div class="quorum">Puntualidad: <span id="punctPct">0.00%</span> | Asistencia: <span id="quorumPct">0.00%</span></div>
+      </div>
+      <div class="header-date" id="headerDate">—</div>
+    </div>
+    <div class="header-right">
+      <div class="mision-text">Misión Boliviana Occidental Norte</div>
+      <div class="live-row">
+        <div class="live-dot" id="liveDot"></div>
+        <span class="live-txt" id="liveTxt">Actualización en tiempo real</span>
+      </div>
+      <div class="formula-txt">✅ Puntualidad: (Puntuales ÷ Total del grupo) × 100</div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:.7rem;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.5px;">📅 Día:</span>
+        <select id="fechaSelect" onchange="setFechaSelec(this.value)"
+          style="background:#0a1525;border:1px solid rgba(255,255,255,.2);color:#f1f5f9;font-family:'Exo 2',sans-serif;font-size:.75rem;font-weight:600;padding:4px 10px;border-radius:6px;cursor:pointer;outline:none;">
+          <option value="">Cargando…</option>
+        </select>
+      </div>
+      <button onclick="enterFullscreen()" id="fsBtn" style="margin-top:8px;background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);color:#38bdf8;font-family:'Exo 2',sans-serif;font-size:.75rem;font-weight:700;padding:5px 12px;border-radius:6px;cursor:pointer;letter-spacing:.5px;transition:background .2s;">📺 Pantalla completa</button>
+    </div>
+  </div>
+
+  <!-- GRUPOS -->
+  <div class="stats-grid" id="statsContainer">
+    <div class="spinner-wrap"><div class="spinner"></div></div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <h3>Registrados</h3>
+      <div class="summary-number blue" id="sReg">0</div>
+    </div>
+    <div class="summary-card">
+      <h3>Presentes</h3>
+      <div class="summary-number" id="sPres">0</div>
+    </div>
+    <div class="summary-card">
+      <h3>Ausentes</h3>
+      <div class="summary-number" id="sAus">0</div>
+    </div>
+    <div class="summary-card ok-card">
+      <h3>⏰ Puntuales</h3>
+      <div class="summary-number ok" id="sPunt">0</div>
+    </div>
+    <div class="summary-card late-card">
+      <h3>⏰ Tarde</h3>
+      <div class="summary-number late" id="sTarde">0</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer-recent">
+  <div class="footer-label">
+    <span>🕒</span>
+    <span id="footerTitle">Últimos registros</span>
+    <button class="footer-toggle" onclick="toggleFooter()" title="Alternar">⇆</button>
+  </div>
+  <div class="footer-list" id="footerList">
+    <div style="color:rgba(255,255,255,.3);font-size:.8rem;padding:8px">Sin registros aún…</div>
+  </div>
+</div>
+
+<script>
+const GAS_URL  = 'https://script.google.com/macros/s/AKfycbx9CfsHO56sGyryhrgQh6jQ3KY_itn1RuaexItmAqxR2-ltwhQJ2BNOx-WKIEKIP9g2hg/exec';
+const INICIO   = 8 * 60; // 08:00 AM
+let DATA            = null;
+let prevHash        = null;
+let showLatest      = true;
+let fechaSelecMon   = null; // null = última fecha
+
+// Reloj
+function tickDate() {
+  const now = new Date();
+  const s = now.toLocaleString('es-BO', {
+    weekday:'long', year:'numeric', month:'long',
+    day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit'
+  });
+  document.getElementById('headerDate').textContent = s.charAt(0).toUpperCase() + s.slice(1);
+}
+setInterval(tickDate, 1000); tickDate();
+
+// Helpers
+function parseMin(f) {
+  if (!f) return null;
+  const p = f.trim().split(' '); if (p.length < 2) return null;
+  const t = p[1].split(':'); return parseInt(t[0]) * 60 + parseInt(t[1]);
+}
+function parseFStr(f) { return f ? f.trim().split(' ')[0] : ''; }
+function parseHStr(f) { const p = f ? f.trim().split(' ') : []; return p.length > 1 ? p[1] : ''; }
+function parseFNum(f) {
+  if (!f) return 0; const p = f.split('/');
+  return p.length === 3 ? parseInt(p[2] + p[1] + p[0]) : 0;
+}
+function isOnTime(min) { return min !== null && min <= INICIO; }
+
+function pctCls(pct) {
+  if (pct >= 80) return 'high';
+  if (pct >= 40) return 'mid';
+  if (pct > 0)   return 'low';
+  return '';
+}
+
+// Toggle footer
+function toggleFooter() {
+  showLatest = !showLatest;
+  document.getElementById('footerTitle').textContent = showLatest ? 'Últimos registros' : 'Primeros registros';
+  renderFooter();
+}
+
+// ── RENDER SEMANA ────────────────────────────────────────────
+function renderSemana(parsed, tpg) {
+  // Acumular todos los registros por grupo
+  const gmapS = {};
+  parsed.forEach(r => { if (!gmapS[r.grupo]) gmapS[r.grupo] = []; gmapS[r.grupo].push(r); });
+  Object.keys(tpg).forEach(g => { if (!gmapS[g]) gmapS[g] = []; });
+
+  const fechas = [...new Set(parsed.map(r => r.fechaDate))].filter(Boolean);
+  const label  = fechas.length > 1
+    ? fechas.sort((a,b) => parseFNum(a)-parseFNum(b))[0] + ' — ' + fechas.sort((a,b) => parseFNum(b)-parseFNum(a))[0]
+    : fechas[0] || '';
+
+  const grupos = Object.entries(gmapS).map(([g, regs]) => {
+    const total  = tpg[g] || regs.length;
+    const dias   = [...new Set(regs.map(r => r.fechaDate))].length;
+    const punt   = regs.filter(r => isOnTime(r.min)).length;
+    const tarde  = regs.filter(r => r.min !== null && r.min > INICIO).length;
+    // % sobre total del grupo (sin multiplicar por días)
+    const pctP   = total ? Math.round(punt / total * 100) : 0;
+    return { g, total, dias, punt, tarde, pres: regs.length, pctP };
+  }).sort((a, b) => b.punt !== a.punt ? b.punt - a.punt : b.pctP - a.pctP);
+
+  // KPIs semana
+  const puntT  = parsed.filter(r => isOnTime(r.min)).length;
+  const tardT  = parsed.filter(r => r.min !== null && r.min > INICIO).length;
+  const totalM = Object.values(tpg).reduce((a,b) => a+b, 0) || parsed.length;
+  const pctPG  = parsed.length ? (puntT / parsed.length * 100).toFixed(2) : '0.00';
+  const pctAG  = totalM ? (parsed.length / (totalM * Math.max(fechas.length,1)) * 100).toFixed(2) : '0.00';
+
+  document.getElementById('quorumPct').textContent = pctAG + '%';
+  document.getElementById('punctPct').textContent  = pctPG + '%';
+
+  const container = document.getElementById('statsContainer');
+  container.innerHTML = grupos.map((g, i) => `
+    <div class="stat-card" style="animation-delay:${i * .07}s">
+      <div class="card-top">${g.dias} día${g.dias!==1?'s':''} · ${g.pres} escaneos</div>
+      <div class="percentage ${pctCls(g.pctP)}">${g.pctP}%</div>
+      <div class="group-name">${g.g}</div>
+      <div class="attendance-info">Faltan: ${g.total - g.punt}</div>
+      <div class="punctuality-info">
+        <span>Puntualidad: ${g.punt}/${g.total}</span>
+        <div class="punctuality-indicators">
+          <span class="punctuality-indicator on-time">⏰ ${g.punt}</span>
+          <span class="punctuality-indicator late">⏰ ${g.tarde}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('sReg').textContent   = totalM;
+  document.getElementById('sPres').textContent  = parsed.length;
+  document.getElementById('sAus').textContent   = '—';
+  document.getElementById('sPunt').textContent  = puntT;
+  document.getElementById('sTarde').textContent = tardT;
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function render() {
+  if (!DATA || !DATA.registros) return;
+  const tpg = DATA.totalPorGrupo || {};
+
+  const parsed = DATA.registros.map(r => ({
+    ...r,
+    fechaDate: parseFStr(r.fecha),
+    horaStr:   parseHStr(r.fecha),
+    min:       parseMin(r.fecha),
+  })).filter(r => r.min !== null);
+
+  // Última fecha disponible
+  const uf  = parsed.reduce((m, r) => parseFNum(r.fechaDate) > parseFNum(m) ? r.fechaDate : m, '');
+  // Fecha activa: la seleccionada o la última
+  const fechaActiva = (fechaSelecMon && parsed.some(r => r.fechaDate === fechaSelecMon))
+    ? fechaSelecMon : uf;
+  const hoy = parsed.filter(r => r.fechaDate === fechaActiva);
+
+  // Actualizar selector con todas las fechas disponibles
+  const todasFechas = [...new Set(parsed.map(r => r.fechaDate))]
+    .filter(Boolean).sort((a,b) => parseFNum(b) - parseFNum(a));
+  const sel = document.getElementById('fechaSelect');
+  const esSemana = fechaSelecMon === 'semana';
+  if (sel) {
+    sel.innerHTML =
+      `<option value="semana" style="background:#0a1525;color:#f1f5f9;" ${esSemana ? 'selected' : ''}>🏅 Semana completa</option>` +
+      todasFechas.map(f =>
+        `<option value="${f}" style="background:#0a1525;color:#f1f5f9;" ${f === fechaActiva && !esSemana ? 'selected' : ''}>${f}${f === uf ? ' (hoy)' : ''}</option>`
+      ).join('');
+  }
+
+  // ── MODO SEMANA ──────────────────────────────────────────────
+  if (fechaSelecMon === 'semana') {
+    renderSemana(parsed, tpg);
+    return;
+  }
+
+  // Grupos
+  const gmap = {};
+  hoy.forEach(r => { if (!gmap[r.grupo]) gmap[r.grupo] = []; gmap[r.grupo].push(r); });
+  Object.keys(tpg).forEach(g => { if (!gmap[g]) gmap[g] = []; });
+
+  const grupos = Object.entries(gmap).map(([g, regs]) => {
+    const total  = tpg[g] || regs.length;
+    const pres   = regs.length;
+    const punt   = regs.filter(r => isOnTime(r.min)).length;
+    const tarde  = regs.filter(r => r.min !== null && r.min > INICIO).length;
+    const ausen  = Math.max(total - pres, 0);
+    const pctA   = total ? Math.round(pres / total * 100) : 0;
+    const pctP   = total ? Math.round(punt / total * 100) : 0;
+    return { g, total, pres, punt, tarde, ausen, pctA, pctP };
+  }).sort((a, b) => b.punt !== a.punt ? b.punt - a.punt : b.pctP - a.pctP);
+
+  // KPIs globales
+  const totalM = Object.values(tpg).reduce((a, b) => a + b, 0) || hoy.length;
+  const presT  = hoy.length;
+  const ausT   = Math.max(totalM - presT, 0);
+  const puntT  = hoy.filter(r => isOnTime(r.min)).length;
+  const tardT  = hoy.filter(r => r.min !== null && r.min > INICIO).length;
+  const pctAG  = totalM ? (presT  / totalM * 100).toFixed(2) : '0.00';
+  const pctPG  = totalM ? (puntT  / totalM * 100).toFixed(2) : '0.00';
+
+  // Header
+  document.getElementById('quorumPct').textContent = pctAG + '%';
+  document.getElementById('punctPct').textContent  = pctPG + '%';
+
+  // Tarjetas grupos — DOM inteligente sin parpadeo
+  const container = document.getElementById('statsContainer');
+  const existing  = container.querySelectorAll('.stat-card');
+
+  if (existing.length !== grupos.length) {
+    // Primera carga o número de grupos cambió: crear todo
+    container.innerHTML = grupos.map((g, i) => `
+      <div class="stat-card" data-grupo="${g.g}" style="animation-delay:${i * .07}s">
+        <div class="card-top" data-f="top">Total: ${g.total} | Presentes: ${g.pres}</div>
+        <div class="percentage ${pctCls(g.pctP)}" data-f="pct">${g.pctP}%</div>
+        <div class="group-name" data-f="name">${g.g}</div>
+        <div class="attendance-info" data-f="faltan">Faltan: ${g.ausen}</div>
+        <div class="punctuality-info">
+          <span data-f="punt-txt">Puntualidad: ${g.pctP}% (${g.punt}/${g.total})</span>
+          <div class="punctuality-indicators">
+            <span class="punctuality-indicator on-time" data-f="cnt-ok">⏰ ${g.punt}</span>
+            <span class="punctuality-indicator late" data-f="cnt-late">⏰ ${g.tarde}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    // Solo actualizar valores sin tocar el DOM
+    grupos.forEach((g, i) => {
+      const card = existing[i];
+      if (!card) return;
+      const upd = (f, v) => { const el = card.querySelector(`[data-f="${f}"]`); if (el && el.textContent !== v) el.textContent = v; };
+      upd('top',      `Total: ${g.total} | Presentes: ${g.pres}`);
+      upd('faltan',   `Faltan: ${g.ausen}`);
+      upd('punt-txt', `Puntualidad: ${g.pctP}% (${g.punt}/${g.total})`);
+      upd('cnt-ok',   `⏰ ${g.punt}`);
+      upd('cnt-late', `⏰ ${g.tarde}`);
+      const pctEl = card.querySelector('[data-f="pct"]');
+      if (pctEl) {
+        if (pctEl.textContent !== g.pctP + '%') pctEl.textContent = g.pctP + '%';
+        const nc = 'percentage ' + pctCls(g.pctP);
+        if (pctEl.className !== nc) pctEl.className = nc;
+      }
+    });
+  }
+
+  // Summary
+  document.getElementById('sReg').textContent   = totalM;
+  document.getElementById('sPres').textContent  = presT;
+  document.getElementById('sAus').textContent   = ausT;
+  document.getElementById('sPunt').textContent  = puntT;
+  document.getElementById('sTarde').textContent = tardT;
+
+  renderFooter();
+}
+
+let prevFooterHash = null;
+
+function renderFooter() {
+  if (!DATA || !DATA.registros) return;
+  const parsed = DATA.registros.map(r => ({
+    ...r, horaStr: parseHStr(r.fecha), min: parseMin(r.fecha),
+    fechaDate: parseFStr(r.fecha),
+  })).filter(r => r.min !== null);
+
+  const uf  = parsed.reduce((m, r) => parseFNum(r.fechaDate) > parseFNum(m) ? r.fechaDate : m, '');
+  const hoy = parsed.filter(r => r.fechaDate === uf);
+
+  const sorted = [...hoy].sort((a, b) =>
+    showLatest ? (b.min || 0) - (a.min || 0) : (a.min || 0) - (b.min || 0)
+  ).slice(0, 3);
+
+  const list = document.getElementById('footerList');
+  if (!sorted.length) {
+    list.innerHTML = '<div style="color:rgba(255,255,255,.3);font-size:.8rem;padding:8px">Sin registros hoy</div>';
+    return;
+  }
+
+  // Solo reconstruir si los datos cambiaron
+  const fHash = sorted.map(r => r.nombre + r.horaStr).join('|');
+  if (fHash === prevFooterHash) return;
+  prevFooterHash = fHash;
+
+  const items = [...sorted, ...sorted].map(r => {
+    const punct = isOnTime(r.min);
+    const fecha = r.fechaDate ? r.fechaDate.split('/').slice(0,2).join('/') : '';
+    return `<div class="footer-item ${punct ? 'on-time' : 'late'}">
+      <div class="fi-person">
+        <div class="fi-name">${r.nombre}</div>
+        <div class="fi-group">${r.grupo}</div>
+      </div>
+      <div class="fi-date">${fecha} ${r.horaStr}</div>
+      <div class="fi-badge ${punct ? 'on-time' : 'late'}">${punct ? '✓' : '!'}</div>
+    </div>`;
+  }).join('');
+
+  const dur = Math.max(15, sorted.length * 4);
+  list.innerHTML = `<div class="footer-ticker" style="animation-duration:${dur}s">${items}</div>`;
+}
+
+// ── FETCH JSONP ───────────────────────────────────────────────
+async function fetchData() {
+  const cb  = 'cb_' + Date.now();
+  const url = GAS_URL + '?vista=puntualidad&callback=' + cb;
+  await new Promise(resolve => {
+    const s = document.createElement('script');
+    const t = setTimeout(() => { cleanup(); setLive(false); resolve(); }, 10000);
+    function cleanup() { clearTimeout(t); delete window[cb]; s.parentNode && s.parentNode.removeChild(s); }
+    window[cb] = json => {
+      cleanup();
+      if (json && json.registros) {
+        const h = json.registros.map(r => r.nombre + r.fecha).join('|');
+        const isFirst = prevHash === null;
+        const changed = h !== prevHash;
+        if (changed && !isFirst && DATA && DATA.registros) {
+          const prev   = new Set(DATA.registros.map(r => r.nombre + r.fecha));
+          const nuevos = json.registros.filter(r => !prev.has(r.nombre + r.fecha));
+          if (nuevos.length) showArrival(nuevos[nuevos.length - 1]);
+        }
+        prevHash = h; DATA = json;
+        setLive(true);
+        if (changed || !document.querySelector('.stat-card')) render();
+      } else setLive(false);
+      resolve();
+    };
+    s.onerror = () => { cleanup(); setLive(false); resolve(); };
+    s.src = url; document.head.appendChild(s);
+  });
+}
+
+function setLive(on) {
+  const d = document.getElementById('liveDot');
+  const t = document.getElementById('liveTxt');
+  d.className = 'live-dot' + (on ? '' : ' off');
+  t.style.color = on ? '#22c55e' : '#ef4444';
+}
+
+let prevModo = null; // 'semana' o 'dia'
+
+function setFechaSelec(val) {
+  fechaSelecMon = val || null;
+  // Forzar recreado si cambia entre modo semana y modo día
+  const nuevoModo = val === 'semana' ? 'semana' : 'dia';
+  if (nuevoModo !== prevModo) {
+    document.getElementById('statsContainer').innerHTML = '';
+    prevModo = nuevoModo;
+  }
+  if (DATA) render();
+}
+
+function enterFullscreen() {
+  const el = document.documentElement;
+  if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+  else if (el.msRequestFullscreen) el.msRequestFullscreen();
+  const btn = document.getElementById('fsBtn');
+  if (btn) btn.style.display = 'none';
+}
+document.addEventListener('fullscreenchange', () => {
+  const btn = document.getElementById('fsBtn');
+  if (btn) btn.style.display = document.fullscreenElement ? 'none' : 'block';
+});
+document.addEventListener('click', function autoFs() {
+  enterFullscreen();
+  document.removeEventListener('click', autoFs);
+}, { once: true });
+
+
+let arrivalTimer = null;
+
+function showArrival(r) {
+  const min    = parseMin(r.fecha);
+  const hora   = parseHStr(r.fecha);
+  const punct  = isOnTime(min);
+  const cls    = punct ? 'puntual' : 'tarde';
+
+  document.getElementById('anIcon').textContent    = punct ? '🎉' : '⏰';
+  document.getElementById('anIcon').className      = 'an-icon ' + cls;
+  document.getElementById('anStatus').textContent  = punct ? '¡Puntual!' : 'Tarde';
+  document.getElementById('anStatus').className    = 'an-status ' + cls;
+  document.getElementById('anNombre').textContent  = r.nombre || '—';
+  document.getElementById('anGrupo').textContent   = r.grupo  || '—';
+  document.getElementById('anHora').textContent    = hora     || '—';
+  document.getElementById('anHora').className      = 'an-hora ' + cls;
+  const wrapper = document.getElementById('arrivalWrapper');
+  wrapper.classList.toggle('tarde-card', !punct);
+
+  // Reiniciar barra de progreso
+  const bar = document.getElementById('anBar');
+  bar.className = 'an-progress-bar' + (punct ? '' : ' tarde-bar');
+  bar.style.animation = 'none';
+  void bar.offsetWidth;
+  bar.style.animation = 'anProgress 4s linear forwards';
+
+  if (arrivalTimer) clearTimeout(arrivalTimer);
+  const notif = document.getElementById('arrivalWrapper');
+  notif.classList.remove('hiding', 'visible');
+  void notif.offsetWidth;
+  notif.classList.add('visible');
+
+  arrivalTimer = setTimeout(() => {
+    notif.classList.remove('visible');
+    notif.classList.add('hiding');
+    arrivalTimer = setTimeout(() => notif.classList.remove('hiding'), 450);
+  }, 4000);
+}
+
+function poll() { fetchData().finally(() => setTimeout(poll, 2000)); }
+poll();
+</script>
+
+<div id="arrivalWrapper">
+  <div id="arrivalNotif">
+    <div class="an-header">
+      <div class="an-icon" id="anIcon">👋</div>
+      <div>
+        <div class="an-label">Nueva llegada</div>
+        <div class="an-status" id="anStatus">—</div>
+      </div>
+    </div>
+    <div class="an-nombre" id="anNombre">—</div>
+    <div class="an-grupo" id="anGrupo">—</div>
+    <div class="an-footer">
+      <div class="an-hora" id="anHora">—</div>
+      <div class="an-progress"><div class="an-progress-bar" id="anBar"></div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
