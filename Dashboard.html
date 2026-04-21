@@ -283,6 +283,7 @@ body::before {
 }
 .fi-badge.on-time { background: #22c55e; color: #fff; }
 .fi-badge.late    { background: #ef4444; color: #fff; }
+
 .no-data {
   text-align: center; color: #94a3b8;
   font-style: italic; padding: 40px; font-size: 1rem;
@@ -304,6 +305,7 @@ body::before {
   .summary-grid { grid-template-columns: repeat(2, 1fr); }
   .footer-list { flex-wrap: wrap; }
 }
+
 .stat-card:nth-child(1) { animation-delay: .05s; }
 .stat-card:nth-child(2) { animation-delay: .10s; }
 .stat-card:nth-child(3) { animation-delay: .15s; }
@@ -317,6 +319,7 @@ body::before {
 .summary-card:nth-child(3) { animation-delay: .2s; }
 .summary-card:nth-child(4) { animation-delay: .25s; }
 .summary-card:nth-child(5) { animation-delay: .3s; }
+
 #arrivalWrapper {
   position: fixed;
   bottom: 180px; right: 20px;
@@ -462,7 +465,6 @@ body::before {
       <button onclick="enterFullscreen()" id="fsBtn" style="margin-top:8px;background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);color:#38bdf8;font-family:'Exo 2',sans-serif;font-size:.75rem;font-weight:700;padding:5px 12px;border-radius:6px;cursor:pointer;letter-spacing:.5px;transition:background .2s;">📺 Pantalla completa</button>
     </div>
   </div>
-
   <div class="stats-grid" id="statsContainer">
     <div class="spinner-wrap"><div class="spinner"></div></div>
   </div>
@@ -500,6 +502,7 @@ body::before {
     <div style="color:rgba(255,255,255,.3);font-size:.8rem;padding:8px">Sin registros aún…</div>
   </div>
 </div>
+
 <script>
 const GAS_URL  = 'https://script.google.com/macros/s/AKfycbx9CfsHO56sGyryhrgQh6jQ3KY_itn1RuaexItmAqxR2-ltwhQJ2BNOx-WKIEKIP9g2hg/exec';
 const INICIO   = 8 * 60; // 08:00 AM
@@ -507,8 +510,6 @@ let DATA            = null;
 let prevHash        = null;
 let showLatest      = true;
 let fechaSelecMon   = null; // null = última fecha
-
-// Reloj
 function tickDate() {
   const now = new Date();
   const s = now.toLocaleString('es-BO', {
@@ -546,39 +547,41 @@ function renderSemana(parsed, tpg) {
   const gmapS = {};
   parsed.forEach(r => { if (!gmapS[r.grupo]) gmapS[r.grupo] = []; gmapS[r.grupo].push(r); });
   Object.keys(tpg).forEach(g => { if (!gmapS[g]) gmapS[g] = []; });
-
-  const fechas = [...new Set(parsed.map(r => r.fechaDate))].filter(Boolean);
-  const label  = fechas.length > 1
-    ? fechas.sort((a,b) => parseFNum(a)-parseFNum(b))[0] + ' — ' + fechas.sort((a,b) => parseFNum(b)-parseFNum(a))[0]
-    : fechas[0] || '';
+  const fechas = [...new Set(parsed.map(r => r.fechaDate))].filter(Boolean)
+    .sort((a,b) => parseFNum(a) - parseFNum(b));
 
   const grupos = Object.entries(gmapS).map(([g, regs]) => {
-    const total  = tpg[g] || regs.length;
-    const dias   = [...new Set(regs.map(r => r.fechaDate))].length;
-    const personasPuntuales = new Set(
-      regs.filter(r => isOnTime(r.min)).map(r => r.nombre)
-    ).size;
-    const personasPunt = new Set(regs.filter(r => isOnTime(r.min)).map(r => r.nombre));
-    const personasTarde = new Set(
-      regs.filter(r => r.min !== null && r.min > INICIO && !personasPunt.has(r.nombre)).map(r => r.nombre)
-    ).size;
-    const presUnicas = new Set(regs.map(r => r.nombre)).size;
-    const pctP = total ? Math.round(personasPuntuales / total * 100) : 0;
-    return { g, total, dias, punt: personasPuntuales, tarde: personasTarde, pres: presUnicas, pctP };
-  }).sort((a, b) => b.punt !== a.punt ? b.punt - a.punt : b.pctP - a.pctP);
-  const puntT  = parsed.filter(r => isOnTime(r.min)).length;
-  const tardT  = parsed.filter(r => r.min !== null && r.min > INICIO).length;
-  const totalM = Object.values(tpg).reduce((a,b) => a+b, 0) || parsed.length;
-  const pctPG  = parsed.length ? (puntT / parsed.length * 100).toFixed(2) : '0.00';
-  const pctAG  = totalM ? (parsed.length / (totalM * Math.max(fechas.length,1)) * 100).toFixed(2) : '0.00';
+    const total = tpg[g] || regs.length;
+    const dias  = [...new Set(regs.map(r => r.fechaDate))].length;
+    const setPunt  = new Set(regs.filter(r => isOnTime(r.min)).map(r => r.nombre));
+    const setPres  = new Set(regs.map(r => r.nombre));
+    const setTarde = new Set([...setPres].filter(n => !setPunt.has(n)));
 
-  document.getElementById('quorumPct').textContent = pctAG + '%';
+    const punt  = setPunt.size;
+    const tarde = setTarde.size;
+    const pres  = setPres.size;   // personas únicas presentes
+    const pctP  = total ? Math.round(punt / total * 100) : 0;
+    return { g, total, dias, punt, tarde, pres, pctP };
+  }).sort((a, b) => b.punt !== a.punt ? b.punt - a.punt : b.pctP - a.pctP);
+  const totalM      = Object.values(tpg).reduce((a,b) => a+b, 0) || parsed.length;
+  const puntUnicos  = new Set(parsed.filter(r => isOnTime(r.min)).map(r => r.nombre)).size;
+  const presUnicos  = new Set(parsed.map(r => r.nombre)).size;
+  const tardeUnicos = new Set(parsed.filter(r => r.min !== null && r.min > INICIO).map(r => r.nombre))
+    .size - puntUnicos < 0 ? 0
+    : [...new Set(parsed.map(r => r.nombre))].filter(n =>
+        !new Set(parsed.filter(r => isOnTime(r.min)).map(r => r.nombre)).has(n) &&
+        parsed.some(r => r.nombre === n && r.min !== null && r.min > INICIO)
+      ).length;
+  const pctAG = totalM ? (presUnicos / totalM * 100).toFixed(2) : '0.00';
+  const pctPG = totalM ? (puntUnicos / totalM * 100).toFixed(2) : '0.00';
+
   document.getElementById('punctPct').textContent  = pctPG + '%';
+  document.getElementById('quorumPct').textContent = pctAG + '%';
 
   const container = document.getElementById('statsContainer');
   container.innerHTML = grupos.map((g, i) => `
     <div class="stat-card" style="animation-delay:${i * .07}s">
-      <div class="card-top">${g.dias} día${g.dias!==1?'s':''} · ${g.pres} escaneos</div>
+      <div class="card-top">${g.dias} día${g.dias!==1?'s':''} · ${g.pres} presente${g.pres!==1?'s':''}</div>
       <div class="percentage ${pctCls(g.pctP)}">${g.pctP}%</div>
       <div class="group-name">${g.g}</div>
       <div class="attendance-info">Faltan: ${g.total - g.punt}</div>
@@ -591,12 +594,11 @@ function renderSemana(parsed, tpg) {
       </div>
     </div>
   `).join('');
-
   document.getElementById('sReg').textContent   = totalM;
-  document.getElementById('sPres').textContent  = parsed.length;
-  document.getElementById('sAus').textContent   = '—';
-  document.getElementById('sPunt').textContent  = puntT;
-  document.getElementById('sTarde').textContent = tardT;
+  document.getElementById('sPres').textContent  = presUnicos;
+  document.getElementById('sAus').textContent   = Math.max(totalM - presUnicos, 0);
+  document.getElementById('sPunt').textContent  = puntUnicos;
+  document.getElementById('sTarde').textContent = tardeUnicos;
 }
 function render() {
   if (!DATA || !DATA.registros) return;
@@ -612,7 +614,6 @@ function render() {
   const fechaActiva = (fechaSelecMon && parsed.some(r => r.fechaDate === fechaSelecMon))
     ? fechaSelecMon : uf;
   const hoy = parsed.filter(r => r.fechaDate === fechaActiva);
-
   const todasFechas = [...new Set(parsed.map(r => r.fechaDate))]
     .filter(Boolean).sort((a,b) => parseFNum(b) - parseFNum(a));
   const sel = document.getElementById('fechaSelect');
@@ -628,7 +629,6 @@ function render() {
     renderSemana(parsed, tpg);
     return;
   }
-
   const gmap = {};
   hoy.forEach(r => { if (!gmap[r.grupo]) gmap[r.grupo] = []; gmap[r.grupo].push(r); });
   Object.keys(tpg).forEach(g => { if (!gmap[g]) gmap[g] = []; });
@@ -779,7 +779,6 @@ let prevModo = null; // 'semana' o 'dia'
 
 function setFechaSelec(val) {
   fechaSelecMon = val || null;
-  // Forzar recreado si cambia entre modo semana y modo día
   const nuevoModo = val === 'semana' ? 'semana' : 'dia';
   if (nuevoModo !== prevModo) {
     document.getElementById('statsContainer').innerHTML = '';
