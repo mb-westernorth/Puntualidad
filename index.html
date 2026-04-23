@@ -159,7 +159,6 @@ function toggleModo() {
     badge.style.borderColor = '';
   }
 }
-
 function showTab(id, btn) {
   tabActual = id;
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -168,7 +167,6 @@ function showTab(id, btn) {
   btn.classList.add('active');
   if (DATA) renderTabActual();
 }
-
 function parseMin(f) {
   if (!f) return null;
   const p = f.trim().split(' ');
@@ -185,9 +183,7 @@ function formatMin(m) {
 }
 function clsDif(d) { if(d===null)return'warn'; if(d<=0)return'ok'; if(d<=15)return'warn'; return'late'; }
 function lblDif(d) { if(d===null)return'—'; if(d<0)return`${Math.abs(d)}m antes`; if(d===0)return'Exacto'; return`+${d}m tarde`; }
-
 function parseFechaNum(f) {
-  // "19/04/2026" → 20260419 para comparar
   if (!f) return 0;
   const p = f.split('/');
   return p.length === 3 ? parseInt(p[2]+p[1]+p[0]) : 0;
@@ -200,18 +196,13 @@ function calcStats(registros) {
     horaStr:   parseHora(r.fecha),
     min:       parseMin(r.fecha),
   })).filter(r => r.min !== null);
-
   const ultimaFecha = parsed.reduce((max, r) =>
     parseFechaNum(r.fechaDate) > parseFechaNum(max) ? r.fechaDate : max, '');
-
   const fechaActiva = (fechaSelecGrupos && parsed.some(r => r.fechaDate === fechaSelecGrupos))
     ? fechaSelecGrupos : ultimaFecha;
-
   const parsedHoy = parsed.filter(r => r.fechaDate === fechaActiva);
-
   const todasFechas = [...new Set(parsed.map(r => r.fechaDate))]
     .sort((a,b) => parseFechaNum(b) - parseFechaNum(a));
-
   const gmap = {};
   parsedHoy.forEach(r => {
     if (!gmap[r.grupo]) gmap[r.grupo] = [];
@@ -227,7 +218,6 @@ function calcStats(registros) {
     const pctBarra  = Math.round(punt/regs.length*100);       // % sobre escaneados (para la barra)
     return { grupo, total: regs.length, esperados, promMin: prom, puntuales: punt, pct, pctBarra };
   }).sort((a,b) => b.puntuales !== a.puntuales ? b.puntuales - a.puntuales : b.pct - a.pct);
-
   const pmap = {};
   parsed.forEach(r => {
     if (!pmap[r.nombre]) pmap[r.nombre] = { nombre:r.nombre, grupo:r.grupo, regs:[] };
@@ -240,7 +230,6 @@ function calcStats(registros) {
     const pct  = Math.round(punt/p.regs.length*100);
     return { ...p, total: p.regs.length, promMin: prom, puntuales: punt, pct };
   }).sort((a,b) => b.puntuales !== a.puntuales ? b.puntuales - a.puntuales : b.pct - a.pct);
-
   const dmap = {};
   parsed.forEach(r => {
     const d = r.dia||'Sin día';
@@ -264,7 +253,6 @@ function calcStats(registros) {
 
   return { parsed, parsedHoy, ultimaFecha, fechaActiva, todasFechas, statsGrupo, statsPersona, statsDia, totalRegs, totalPunt, totalTarde, promGlobal, pctGlobal };
 }
-
 function renderTabActual() {
   const stats = calcStats(DATA.registros || []);
   if (tabActual === 'grupos')     renderGrupos(stats);
@@ -272,7 +260,6 @@ function renderTabActual() {
   if (tabActual === 'dias')       renderDias(stats);
   if (tabActual === 'historial')  renderHistorial(stats);
 }
-
 function renderAll() {
   const stats = calcStats(DATA.registros || []);
   renderGrupos(stats);
@@ -280,11 +267,9 @@ function renderAll() {
   renderDias(stats);
   renderHistorial(stats);
 }
-
 function renderGrupos(stats) {
   const { statsGrupo, totalRegs, totalPunt, totalTarde, pctGlobal, promGlobal, parsed, parsedHoy, ultimaFecha, fechaActiva, todasFechas } = stats;
   const maxPunt = Math.max(...statsGrupo.map(g => g.puntuales), 1);
-
   const totalRegsHoy  = parsedHoy.length;
   const totalPuntHoy  = parsedHoy.filter(r => r.min <= INICIO_MIN).length;
   const totalTardeHoy = totalRegsHoy - totalPuntHoy;
@@ -394,17 +379,16 @@ function renderGrupos(stats) {
       const fechas = [...new Set(parsed.map(r => r.fechaDate))].sort((a,b) => parseFechaNum(a)-parseFechaNum(b));
       const label  = fechas.length > 1 ? fechas[0] + ' — ' + fechas[fechas.length-1] : fechas[0] || '';
       const totalPorGrupoS = (DATA && DATA.totalPorGrupo) || {};
+      const diasGlobales = fechas.length;
       const rankS = Object.entries(gmapS).map(([grupo, regs]) => {
-        const punt       = regs.filter(r => r.min <= INICIO_MIN).length;
-        const tarde      = regs.filter(r => r.min > INICIO_MIN).length;
-        const dias       = [...new Set(regs.map(r => r.fechaDate))].length;
-        const esperados  = totalPorGrupoS[grupo] || regs.length;
-        // pct = puntuales sobre el total de registros del grupo en la semana
-        const pctBarra   = regs.length ? Math.round(punt / regs.length * 100) : 0;
-        // pct del grupo = puntuales sobre (esperados × días con registros)
-        const pctGrupo   = Math.round(punt / (esperados * dias) * 100);
-        return { grupo, puntuales: punt, tarde, dias, pctBarra, pctGrupo, total: regs.length };
-      }).sort((a,b) => b.puntuales !== a.puntuales ? b.puntuales - a.puntuales : b.pctBarra - a.pctBarra);
+        const punt      = regs.filter(r => r.min <= INICIO_MIN).length;
+        const tarde     = regs.filter(r => r.min > INICIO_MIN).length;
+        const esperados = totalPorGrupoS[grupo] || regs.length;
+        const esperadosTotal = esperados * diasGlobales;
+        const pctGrupo  = esperadosTotal ? Math.round(punt / esperadosTotal * 100) : 0;
+        const pctBarra  = pctGrupo;
+        return { grupo, puntuales: punt, tarde, dias: diasGlobales, pctBarra, pctGrupo, total: regs.length };
+      }).sort((a,b) => b.puntuales !== a.puntuales ? b.puntuales - a.puntuales : b.pctGrupo - a.pctGrupo);
       const maxP = Math.max(...rankS.map(g => g.puntuales), 1);
       return `<div class="card">
         <div class="card-head">
@@ -413,18 +397,18 @@ function renderGrupos(stats) {
         </div>
         <div class="card-body">
           ${rankS.map((g,i) => {
-            const cls  = g.pctBarra>=80?'ok':g.pctBarra>=50?'warn':'late';
+            const cls  = g.pctGrupo>=80?'ok':g.pctGrupo>=50?'warn':'late';
             const barW = Math.round(g.puntuales/maxP*100);
             return `<div class="row">
               <div class="rn ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
               <div class="rinfo">
                 <div class="rname">${g.grupo}</div>
-                <div class="rsub">${g.puntuales} puntuales · <span style="color:var(--muted);font-size:10px;">${g.dias} día${g.dias!==1?'s':''} · ${g.pctBarra}% de asistentes</span></div>
+                <div class="rsub">${g.puntuales} puntuales · <span style="color:var(--muted);font-size:10px;">${g.dias} día${g.dias!==1?'s':''} · ${g.pctGrupo}% del grupo</span></div>
                 <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
                   <div style="flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;">
                     <div style="width:${barW}%;height:100%;border-radius:3px;background:var(--${cls==='ok'?'ok':cls==='warn'?'warn':'late'});transition:width .5s;"></div>
                   </div>
-                  <span class="badge ${cls}">${g.puntuales}</span>
+                  <span class="badge ${cls}">${g.pctGrupo}%</span>
                 </div>
               </div>
             </div>`;
@@ -434,7 +418,6 @@ function renderGrupos(stats) {
     })()}
   `;
 }
-
 function renderIndividual(stats) {
   const { statsPersona, parsed } = stats;
   const grupos   = ['Todos', ...new Set(statsPersona.map(p=>p.grupo))].filter(Boolean);
@@ -483,7 +466,6 @@ function renderRankRows(list) {
     </div>`;
   }).join('');
 }
-
 function renderDias(stats) {
   const { statsDia, parsed } = stats;
   const regsDia = diaSelec ? parsed.filter(r=>r.dia===diaSelec) : [];
@@ -522,7 +504,6 @@ function renderDiasOnly() {
   if (!DATA) return;
   renderDias(calcStats(DATA.registros||[]));
 }
-
 function renderHistorial(stats) {
   const { parsed } = stats;
   const sorted = [...parsed].sort((a,b) => b.fechaDate.localeCompare(a.fechaDate)||(a.min||0)-(b.min||0));
