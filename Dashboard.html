@@ -452,6 +452,49 @@ body::before {
 }
 @keyframes anProgress { from{width:100%} to{width:0%} }
 
+
+.ct-title {
+  font-size: .65rem; font-weight: 700;
+  color: #38bdf8; margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,.07); padding-bottom: 6px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ct-title-left  { font-size: .72rem; font-weight: 800; color: #f1f5f9; }
+.ct-title-right { font-size: .62rem; color: rgba(255,255,255,.4); font-weight: 500; }
+.ct-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,.04);
+  font-size: .72rem;
+}
+.ct-row:last-child { border-bottom: none; }
+.ct-name { color: #e2e8f0; font-weight: 600; flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+.ct-min  { font-size: .65rem; color: rgba(255,255,255,.35); margin-left: 6px; flex-shrink: 0; }
+.ct-hora { font-family: 'DM Mono', monospace; font-size: .68rem; margin-left: 4px; flex-shrink: 0; }
+.ct-hora.ok   { color: #22c55e; }
+.ct-hora.late { color: #ef4444; }
+.ct-semana-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,.04);
+  font-size: .72rem;
+}
+.ct-semana-row:last-child { border-bottom: none; }
+.ct-empty { font-size: .72rem; color: rgba(255,255,255,.3); text-align: center; padding: 6px 0; }
+
+/* ── HOVER DETALLE TARJETA ── */
+.stat-card { position: relative; cursor: pointer; }
+.card-front { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.card-back {
+  display: none;
+  position: absolute; inset: 0;
+  background: #0d1e35;
+  border-radius: 13px;
+  padding: 10px 12px;
+  overflow-y: auto;
+  z-index: 10;
+}
+.stat-card:hover .card-back  { display: block; }
+.stat-card:hover .card-front { visibility: hidden; }
 </style>
 </head>
 <body>
@@ -461,7 +504,7 @@ body::before {
   <div class="compact-header">
     <div class="header-left">
       <div class="mission-text">Bienvenida Digital – Ingreso por QR</div>
-      <div class="group-title">GP. EMUNÁ · Puntualidad</div>
+      <div class="group-title">MBON · Puntualidad</div>
       <div class="quorum-display">
         <div class="quorum">Puntualidad: <span id="punctPct">0.00%</span> | Asistencia: <span id="quorumPct">0.00%</span></div>
       </div>
@@ -619,16 +662,22 @@ function renderSemana(parsed, tpg) {
   const container = document.getElementById('statsContainer');
   container.innerHTML = grupos.map((g, i) => `
     <div class="stat-card" style="animation-delay:${i * .07}s">
-      <div class="card-top">${g.dias} día${g.dias!==1?'s':''} · ${g.pres} presente${g.pres!==1?'s':''}</div>
-      <div class="percentage ${pctCls(g.pctP)}">${g.pctP}%</div>
-      <div class="group-name">${g.g}</div>
-      <div class="attendance-info">${g.punt}/${g.total * g.dias} puntuales acumulados</div>
-      <div class="punctuality-info">
-        <span>${g.pctP}% · ${g.dias} día${g.dias!==1?'s':''}</span>
-        <div class="punctuality-indicators">
-          <span class="punctuality-indicator on-time">⏰ ${g.punt}</span>
-          <span class="punctuality-indicator late">⏰ ${g.tarde}</span>
+      <div class="card-front">
+        <div class="card-top">${g.dias} día${g.dias!==1?'s':''} · ${g.pres} presente${g.pres!==1?'s':''}</div>
+        <div class="percentage ${pctCls(g.pctP)}">${g.pctP}%</div>
+        <div class="group-name">${g.g}</div>
+        <div class="attendance-info">${g.punt}/${g.total * g.dias} puntuales acumulados</div>
+        <div class="punctuality-info">
+          <span>${g.pctP}% · ${g.dias} día${g.dias!==1?'s':''}</span>
+          <div class="punctuality-indicators">
+            <span class="punctuality-indicator on-time">⏰ ${g.punt}</span>
+            <span class="punctuality-indicator late">⏰ ${g.tarde}</span>
+          </div>
         </div>
+      </div>
+      <div class="card-back">
+        <div class="ct-title">${buildTooltipSemanaTitle(g.g, parsed, i)}</div>
+        ${buildTooltipSemana(g.g, parsed)}
       </div>
     </div>
   `).join('');
@@ -718,16 +767,22 @@ function render() {
     // Fecha cambió o primera carga: recrear todo
     container.innerHTML = grupos.map((g, i) => `
       <div class="stat-card" data-g="${i}" style="animation-delay:${i * .07}s">
-        <div class="card-top" data-f="top">Total: ${g.total} | Presentes: ${g.pres}</div>
-        <div class="percentage ${pctCls(g.pctP)}" data-f="pct">${g.pctP}%</div>
-        <div class="group-name">${g.g}</div>
-        <div class="attendance-info" data-f="faltan">Faltan: ${g.ausen}</div>
-        <div class="punctuality-info">
-          <span data-f="punt-txt">Puntualidad: ${g.pctP}% (${g.punt}/${g.total})</span>
-          <div class="punctuality-indicators">
-            <span class="punctuality-indicator on-time" data-f="cnt-ok">⏰ ${g.punt}</span>
-            <span class="punctuality-indicator late" data-f="cnt-late">⏰ ${g.tarde}</span>
+        <div class="card-front">
+          <div class="card-top" data-f="top">Total: ${g.total} | Presentes: ${g.pres}</div>
+          <div class="percentage ${pctCls(g.pctP)}" data-f="pct">${g.pctP}%</div>
+          <div class="group-name">${g.g}</div>
+          <div class="attendance-info" data-f="faltan">Faltan: ${g.ausen}</div>
+          <div class="punctuality-info">
+            <span data-f="punt-txt">Puntualidad: ${g.pctP}% (${g.punt}/${g.total})</span>
+            <div class="punctuality-indicators">
+              <span class="punctuality-indicator on-time" data-f="cnt-ok">⏰ ${g.punt}</span>
+              <span class="punctuality-indicator late" data-f="cnt-late">⏰ ${g.tarde}</span>
+            </div>
           </div>
+        </div>
+        <div class="card-back">
+          <div class="ct-title">${buildTooltipDiaTitle(g.g, fechaActiva)}</div>
+          ${buildTooltipDia(g.g, hoy)}
         </div>
       </div>
     `).join('');
@@ -913,6 +968,64 @@ function showArrival(r) {
     notif.classList.add('hiding');
     arrivalTimer = setTimeout(() => notif.classList.remove('hiding'), 450);
   }, 4000);
+}
+
+
+function buildTooltipDia(grupo, parsedHoy) {
+  const regs = parsedHoy.filter(r => r.grupo === grupo)
+    .sort((a, b) => (a.min||0) - (b.min||0));
+  if (!regs.length) return '<div class="ct-empty">Sin registros hoy</div>';
+  return regs.map(r => {
+    const cls  = isOnTime(r.min) ? 'ok' : 'late';
+    const dif  = r.min !== null ? r.min - INICIO : null;
+    const difTxt = dif === null ? '' : dif <= 0 ? `${Math.abs(dif)}m antes` : `+${dif}m`;
+    return `<div class="ct-row">
+      <span class="ct-name">${r.nombre.split(' ').slice(0,2).join(' ')}</span>
+      <span class="ct-min">${difTxt}</span>
+      <span class="ct-hora ${cls}">${r.horaStr}</span>
+    </div>`;
+  }).join('');
+}
+
+function buildTooltipDiaTitle(grupo, fechaActiva) {
+  return `<span class="ct-title-left">${grupo}</span><span class="ct-title-right">${fechaActiva}</span>`;
+}
+
+function buildTooltipSemana(grupo, parsed) {
+  const tpg = (DATA && DATA.totalPorGrupo) || {};
+  const diasGlobales = [...new Set(parsed.map(r => r.fechaDate))].filter(Boolean).length;
+  const regsGrupo    = parsed.filter(r => r.grupo === grupo);
+  const diasGrupo    = [...new Set(regsGrupo.map(r => r.fechaDate))].length;
+  const total        = tpg[grupo] || regsGrupo.length;
+
+  const byPerson = {};
+  regsGrupo.forEach(r => {
+    if (!byPerson[r.nombre]) byPerson[r.nombre] = { punt: 0, tarde: 0 };
+    if (isOnTime(r.min)) byPerson[r.nombre].punt++;
+    else byPerson[r.nombre].tarde++;
+  });
+  const entries = Object.entries(byPerson).sort((a,b) => b[1].punt - a[1].punt);
+  if (!entries.length) return '<div class="ct-empty">Sin registros</div>';
+  return entries.map(([nombre, s]) => {
+    const cls = s.punt > 0 ? 'ok' : 'late';
+    const pct = diasGlobales ? Math.round(s.punt / diasGlobales * 100) : 0;
+    return `<div class="ct-semana-row">
+      <span class="ct-name">${nombre.split(' ').slice(0,2).join(' ')}</span>
+      <span class="ct-hora ${cls}">${s.punt}/${diasGlobales}d · ${pct}%</span>
+    </div>`;
+  }).join('');
+}
+
+function buildTooltipSemanaTitle(grupo, parsed, rankPos) {
+  const diasGlobales = [...new Set(parsed.map(r => r.fechaDate))].filter(Boolean).length;
+  const regsGrupo    = parsed.filter(r => r.grupo === grupo);
+  const diasGrupo    = [...new Set(regsGrupo.map(r => r.fechaDate))].length;
+  const tpg          = (DATA && DATA.totalPorGrupo) || {};
+  const total        = tpg[grupo] || regsGrupo.length;
+  const punt         = regsGrupo.filter(r => isOnTime(r.min)).length;
+  const pct          = (total * diasGlobales) ? Math.round(punt / (total * diasGlobales) * 100) : 0;
+  const pos          = rankPos === 0 ? '🥇' : rankPos === 1 ? '🥈' : rankPos === 2 ? '🥉' : `#${rankPos+1}`;
+  return `<span class="ct-title-left">${pos} ${grupo}</span><span class="ct-title-right">${diasGrupo}/${diasGlobales}d · ${pct}%</span>`;
 }
 
 function poll() { fetchData().finally(() => setTimeout(poll, 2000)); }
